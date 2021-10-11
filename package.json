@@ -4,7 +4,7 @@
   "description": "An API designed with clean architecture",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --watch",
     "test:staged": "jest"
   },
   "author": "Davi Banfi Nogueira",
