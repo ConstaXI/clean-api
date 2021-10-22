@@ -1,4 +1,4 @@
-import { MongoClient } from 'mongodb'
+import { Collection, MongoClient } from 'mongodb'
 
 class MongoHelper {
   client: MongoClient | undefined
@@ -11,6 +11,12 @@ class MongoHelper {
     if (!this.client) throw new Error('Mongo was not connected')
 
     await this.client.close()
+  }
+
+  getCollection(name: string): Collection {
+    if (!this.client) throw new Error('Mongo was not connected')
+
+    return this.client.db().collection(name)
   }
 }
 
