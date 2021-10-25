@@ -4,11 +4,11 @@ import MongoHelper from '../../infra/db/mongodb/helpers/mongo-helper'
 
 describe('Signup Routes', () => {
   beforeAll(async () => {
-    await MongoHelper.connect('mongodb://localhost:27017/jest')
+    await MongoHelper.connect(process.env.MONGO_URL as string)
   })
 
   beforeEach(async () => {
-    const accountCollection = MongoHelper.getCollection('accounts')
+    const accountCollection = await MongoHelper.getCollection('accounts')
     await accountCollection.deleteMany({})
   })
 
