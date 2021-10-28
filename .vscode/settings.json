@@ -1,4 +1,0 @@
-{
-    "cmake.configureOnOpen": false,
-    "god.tsconfig": "./tsconfig.json"
-}
