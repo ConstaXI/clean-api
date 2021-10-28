@@ -53,7 +53,7 @@ describe('Log Controller Decorator', () => {
         email: 'any_email@mail.com',
         name: 'any_name',
         password: 'any_password',
-        password_confirmation: 'any_password'
+        passwordConfirmation: 'any_password'
       }
     }
     await sut.handle(httpRequest)
@@ -67,7 +67,7 @@ describe('Log Controller Decorator', () => {
         email: 'any_email@mail.com',
         name: 'any_name',
         password: 'any_password',
-        password_confirmation: 'any_password'
+        passwordConfirmation: 'any_password'
       }
     }
     const httpResponse = await sut.handle(httpRequest)
@@ -92,7 +92,7 @@ describe('Log Controller Decorator', () => {
         email: 'any_email@mail.com',
         name: 'any_name',
         password: 'any_password',
-        password_confirmation: 'any_password'
+        passwordConfirmation: 'any_password'
       }
     }
     await sut.handle(httpRequest)
