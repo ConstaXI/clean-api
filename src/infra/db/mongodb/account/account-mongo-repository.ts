@@ -11,14 +11,14 @@ interface QueriedAccount extends AccountModel {
 }
 
 export class AccountMongoRepository implements AddAccountRepository, LoadAccountByEmailRepository, UpdateAccessTokenRepository {
-  async add(accountData: AddAccountModel): Promise<AccountModel> {
+  async add(accountData: AddAccountModel): Promise<AccountModel | null> {
     const accountCollection = await MongoHelper.getCollection('accounts')
     const result = await accountCollection.insertOne(accountData)
     const account = await accountCollection.findOne(result.insertedId) as QueriedAccount
     return MongoHelper.map(account)
   }
 
-  async load(email: string): Promise<AccountModel> {
+  async load(email: string): Promise<AccountModel | null> {
     const accountCollection = await MongoHelper.getCollection('accounts')
     const account = await accountCollection.findOne({ email }) as QueriedAccount
     return account && MongoHelper.map(account)

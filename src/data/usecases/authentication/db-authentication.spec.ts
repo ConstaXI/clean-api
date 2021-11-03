@@ -92,14 +92,14 @@ describe('DbAuthentication UseCase', () => {
 
   test('Should throw if LoadAccountByEmailRepository throws', async () => {
     const { sut, loadAccountByEmailRepositoryStub } = makeSut()
-    jest.spyOn(loadAccountByEmailRepositoryStub, 'load').mockReturnValueOnce(new Promise((resolve, reject) => reject(new Error())))
+    jest.spyOn(loadAccountByEmailRepositoryStub, 'load').mockReturnValueOnce(Promise.reject(new Error()).catch())
     const promise = sut.auth(makeFakeAuth())
-    void expect(promise).rejects.toThrow()
+    await expect(promise).rejects.toThrow()
   })
 
   test('Should return null if LoadAccountByEmailRepository returns null', async () => {
     const { sut, loadAccountByEmailRepositoryStub } = makeSut()
-    jest.spyOn(loadAccountByEmailRepositoryStub, 'load').mockReturnValueOnce(new Promise(resolve => resolve(null as unknown as AccountModel)))
+    jest.spyOn(loadAccountByEmailRepositoryStub, 'load').mockReturnValueOnce(Promise.resolve(null as unknown as AccountModel))
     const accessToken = await sut.auth(makeFakeAuth())
     expect(accessToken).toBe(null)
   })
@@ -113,9 +113,9 @@ describe('DbAuthentication UseCase', () => {
 
   test('Should throw if HashCompare throws', async () => {
     const { sut, hashCompareStub } = makeSut()
-    jest.spyOn(hashCompareStub, 'compare').mockReturnValueOnce(new Promise((resolve, reject) => reject(new Error())))
+    jest.spyOn(hashCompareStub, 'compare').mockReturnValueOnce(Promise.reject(new Error()))
     const promise = sut.auth(makeFakeAuth())
-    void expect(promise).rejects.toThrow()
+    await expect(promise).rejects.toThrow()
   })
 
   test('Should return null if HashCompare returns false', async () => {
@@ -134,9 +134,9 @@ describe('DbAuthentication UseCase', () => {
 
   test('Should throw if TokenGenerator throws', async () => {
     const { sut, tokenGeneratorStub } = makeSut()
-    jest.spyOn(tokenGeneratorStub, 'generate').mockReturnValueOnce(new Promise((resolve, reject) => reject(new Error())))
+    jest.spyOn(tokenGeneratorStub, 'generate').mockReturnValueOnce(Promise.reject(new Error()))
     const promise = sut.auth(makeFakeAuth())
-    void expect(promise).rejects.toThrow()
+    await expect(promise).rejects.toThrow()
   })
 
   test('Should call TokenGenerator with correct id', async () => {
@@ -154,7 +154,7 @@ describe('DbAuthentication UseCase', () => {
 
   test('Should throw if TokenGenerator throws', async () => {
     const { sut, updateAccessTokenRepositoryStub } = makeSut()
-    jest.spyOn(updateAccessTokenRepositoryStub, 'update').mockReturnValueOnce(new Promise((resolve, reject) => reject(new Error())))
+    jest.spyOn(updateAccessTokenRepositoryStub, 'update').mockReturnValueOnce(Promise.reject(new Error()))
     const promise = sut.auth(makeFakeAuth())
     void expect(promise).rejects.toThrow()
   })

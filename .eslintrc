@@ -1,8 +1,10 @@
 {
     "extends": "standard-with-typescript",
     "parserOptions": {
-        "project": "C:\\Users\\DaviB\\OneDrive\\Desktop\\clean-api\\tsconfig.eslint.json"
+        "files": "*.ts",
+        "project": "./tsconfig.eslint.json"
     },
+    "parser": "@typescript-eslint/parser",
     "rules": {
         "@typescript-eslint/strict-boolean-expressions": "off",
         "@typescript-eslint/space-before-function-paren": "off",

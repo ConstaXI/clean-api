@@ -30,10 +30,10 @@ describe('Account Mongo Repository', () => {
       password: 'any_password'
     })
     expect(account).toBeTruthy()
-    expect(account.id).toBeTruthy()
-    expect(account.name).toBe('any_name')
-    expect(account.email).toBe('any_email@mail.com')
-    expect(account.password).toBe('any_password')
+    expect(account?.id).toBeTruthy()
+    expect(account?.name).toBe('any_name')
+    expect(account?.email).toBe('any_email@mail.com')
+    expect(account?.password).toBe('any_password')
   })
 
   test('Should return an account on load success', async () => {
@@ -45,10 +45,10 @@ describe('Account Mongo Repository', () => {
     })
     const account = await sut.load('any_email@mail.com')
     expect(account).toBeTruthy()
-    expect(account.id).toBeTruthy()
-    expect(account.name).toBe('any_name')
-    expect(account.email).toBe('any_email@mail.com')
-    expect(account.password).toBe('any_password')
+    expect(account?.id).toBeTruthy()
+    expect(account?.name).toBe('any_name')
+    expect(account?.email).toBe('any_email@mail.com')
+    expect(account?.password).toBe('any_password')
   })
 
   test('Should return null if load fails', async () => {
