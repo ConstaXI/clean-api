@@ -4,7 +4,7 @@ import { AddAccount } from '../../../../domain/usecases/add-account'
 import { DbAddAccount } from '../../../../data/usecases/add-account/db-add-account'
 
 export const makeDbAddAccount = (): AddAccount => {
-  const bcryptAdater = new BcryptAdapter(12)
+  const bcryptAdapter = new BcryptAdapter(12)
   const accountMongoRepository = new AccountMongoRepository()
-  return new DbAddAccount(bcryptAdater, accountMongoRepository)
+  return new DbAddAccount(bcryptAdapter, accountMongoRepository, accountMongoRepository)
 }

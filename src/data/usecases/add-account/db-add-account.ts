@@ -1,21 +1,25 @@
-import { AccountModel, AddAccount, AddAccountModel, AddAccountRepository, Encrypter, LoadAccountByEmailRepository } from './db-add-account-protocols'
+import {
+  AccountModel,
+  AddAccount,
+  AddAccountModel,
+  AddAccountRepository,
+  Encrypter,
+  LoadAccountByEmailRepository
+} from './db-add-account-protocols'
 
 export class DbAddAccount implements AddAccount {
   constructor(
     private readonly encrypter: Encrypter,
     private readonly addAccountRepository: AddAccountRepository,
-    private readonly loadAccountByEmailRepository?: LoadAccountByEmailRepository
+    private readonly loadAccountByEmailRepository: LoadAccountByEmailRepository
   ) {}
 
   async add(accountData: AddAccountModel): Promise<AccountModel | null> {
-    const userAlreadyExists = await this.loadAccountByEmailRepository?.load(accountData.email)
+    const userAlreadyExists = await this.loadAccountByEmailRepository.load(accountData.email)
 
-    if (!userAlreadyExists) {
-      const hashedPassword = await this.encrypter.encrypt(accountData.password)
-      const account = await this.addAccountRepository.add(Object.assign({}, accountData, { password: hashedPassword }))
-      return account
-    }
+    if (userAlreadyExists) return null
 
-    return null
+    const hashedPassword = await this.encrypter.encrypt(accountData.password)
+    return await this.addAccountRepository.add(Object.assign({}, accountData, { password: hashedPassword }))
   }
 }
