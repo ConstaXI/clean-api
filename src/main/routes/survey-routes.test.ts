@@ -18,6 +18,27 @@ const makeFakeSurveyData = (): AddSurveyModel => ({
 let surveyCollection: Collection
 let accountCollection: Collection
 
+const makeAccessToken = async (): Promise<string> => {
+  const insertResult = await accountCollection.insertOne({
+    name: 'any_name',
+    email: 'any_mail@email.com',
+    password: 'any_password',
+    role: 'admin'
+  })
+
+  const accessToken = jwt.sign(insertResult.insertedId.toHexString(), env.jwtSecret)
+
+  await accountCollection.updateOne({
+    _id: insertResult.insertedId
+  }, {
+    $set: {
+      accessToken: accessToken
+    }
+  })
+
+  return accessToken
+}
+
 describe('Surveys Routes', () => {
   beforeAll(async () => {
     await MongoHelper.connect(process.env.MONGO_URL as string)
@@ -44,26 +65,9 @@ describe('Surveys Routes', () => {
     })
 
     test('Should return 204 on add survey with valid accessToken', async () => {
-      const insertResult = await accountCollection.insertOne({
-        name: 'any_name',
-        email: 'any_mail@email.com',
-        password: 'any_password',
-        role: 'admin'
-      })
-
-      const accessToken = jwt.sign(insertResult.insertedId.toHexString(), env.jwtSecret)
-
-      await accountCollection.updateOne({
-        _id: insertResult.insertedId
-      }, {
-        $set: {
-          accessToken: accessToken
-        }
-      })
-
       await request(app)
         .post('/api/surveys')
-        .set('x-access-token', accessToken)
+        .set('x-access-token', await makeAccessToken())
         .send(makeFakeSurveyData())
         .expect(204)
     })
@@ -74,6 +78,13 @@ describe('Surveys Routes', () => {
       await request(app)
         .get('/api/surveys')
         .expect(403)
+    })
+
+    test('Should return 204 on load surveys with valid accessToken', async () => {
+      await request(app)
+        .get('/api/surveys')
+        .set('x-access-token', await makeAccessToken())
+        .expect(204)
     })
   })
 })
