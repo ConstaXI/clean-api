@@ -7,10 +7,6 @@ import { AddAccountModel } from '../../../../domain/usecases/add-account'
 import MongoHelper from '../helpers/mongo-helper'
 import { LoadAccountByTokenRepository } from '../../../../data/protocols/db/account/load-account-by-token-repository'
 
-interface QueriedAccount extends AccountModel {
-  _id: string
-}
-
 export class AccountMongoRepository implements
     AddAccountRepository,
     LoadAccountByEmailRepository,
@@ -19,13 +15,13 @@ export class AccountMongoRepository implements
   async addAccount(accountData: AddAccountModel): Promise<AccountModel | null> {
     const accountCollection = await MongoHelper.getCollection('accounts')
     const result = await accountCollection.insertOne(accountData)
-    const account = await accountCollection.findOne(result.insertedId) as QueriedAccount
+    const account = await accountCollection.findOne(result.insertedId) as AccountModel
     return MongoHelper.map(account)
   }
 
   async loadByEmail(email: string): Promise<AccountModel | null> {
     const accountCollection = await MongoHelper.getCollection('accounts')
-    const account = await accountCollection.findOne({ email }) as QueriedAccount
+    const account = await accountCollection.findOne({ email }) as AccountModel
     return account && MongoHelper.map(account)
   }
 
@@ -49,7 +45,7 @@ export class AccountMongoRepository implements
       }, {
         role: 'admin'
       }]
-    }) as QueriedAccount
+    }) as AccountModel
     return account && MongoHelper.map(account)
   }
 }

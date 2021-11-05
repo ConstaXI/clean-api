@@ -5,7 +5,7 @@ import MongoHelper from '../../../infra/db/mongodb/helpers/mongo-helper'
 import { Collection } from 'mongodb'
 import * as MockDate from 'mockdate'
 
-interface SutTypes {
+type SutTypes = {
   sut: DbLoadSurveys
   loadSurveysRepositoryStub: LoadSurveysRepository
 }

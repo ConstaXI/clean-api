@@ -1,8 +1,14 @@
 import { AuthenticationModel } from '../../../domain/usecases/authentication'
 import { DbAuthentication } from './db-authentication'
-import { AccountModel, HashCompare, LoadAccountByEmailRepository, TokenGenerator, UpdateAccessTokenRepository } from './db-authentication-protocols'
+import {
+  AccountModel,
+  HashCompare,
+  LoadAccountByEmailRepository,
+  TokenGenerator,
+  UpdateAccessTokenRepository
+} from './db-authentication-protocols'
 
-interface SutTypes {
+type SutTypes = {
   sut: DbAuthentication
   loadAccountByEmailRepositoryStub: LoadAccountByEmailRepository
   hashCompareStub: HashCompare

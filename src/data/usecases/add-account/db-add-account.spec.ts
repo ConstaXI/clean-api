@@ -9,7 +9,7 @@ import { DbAddAccount } from './db-add-account'
 import MongoHelper from '../../../infra/db/mongodb/helpers/mongo-helper'
 import { Collection } from 'mongodb'
 
-interface SutTypes {
+type SutTypes = {
   sut: DbAddAccount
   encrypterStub: Encrypter
   addAccountRepositoryStub: AddAccountRepository

@@ -1,9 +1,17 @@
-import { AddAccountModel, AddAccount, AccountModel, HttpRequest, Validation, Authentication, AuthenticationModel } from './signup-controller-protocols'
+import {
+  AccountModel,
+  AddAccount,
+  AddAccountModel,
+  Authentication,
+  AuthenticationModel,
+  HttpRequest,
+  Validation
+} from './signup-controller-protocols'
 import SignUpController from './signup-controller'
 import { EmailInUseError, ServerError } from '../../../errors'
 import { badRequest, forbidden, ok, serverError } from '../../../helpers/http/http-helper'
 
-interface SutTypes {
+type SutTypes = {
   sut: SignUpController
   addAccountStub: AddAccount
   validationStub: Validation
