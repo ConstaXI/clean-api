@@ -15,6 +15,10 @@ const makeFakeSurveyData = (): AddSurveyModel => ({
   date: new Date()
 })
 
+const makeSut = (): SurveyMongoRepository => {
+  return new SurveyMongoRepository()
+}
+
 let surveyCollection: Collection
 
 describe('Account Mongo Repository', () => {
@@ -22,7 +26,7 @@ describe('Account Mongo Repository', () => {
     MockDate.set(new Date())
   })
 
-  beforeAll(() => {
+  afterAll(() => {
     MockDate.reset()
   })
 
@@ -39,14 +43,27 @@ describe('Account Mongo Repository', () => {
     await MongoHelper.disconnect()
   })
 
-  const makeSut = (): SurveyMongoRepository => {
-    return new SurveyMongoRepository()
-  }
+  describe('addSurvey()', () => {
+    test('Should add a survey on success', async () => {
+      const sut = makeSut()
+      await sut.addSurvey(makeFakeSurveyData())
+      const survey = await surveyCollection.findOne({ question: 'any_question' })
+      expect(survey).toBeTruthy()
+    })
+  })
 
-  test('Should add a survey on success', async () => {
-    const sut = makeSut()
-    await sut.addSurvey(makeFakeSurveyData())
-    const survey = await surveyCollection.findOne({ question: 'any_question' })
-    expect(survey).toBeTruthy()
+  describe('loadSurveys()', () => {
+    test('Should load all surveys on success', async () => {
+      await surveyCollection.insertMany([makeFakeSurveyData(), makeFakeSurveyData()])
+      const sut = makeSut()
+      const surveys = await sut.loadAll()
+      expect(surveys?.length).toBe(2)
+    })
+
+    test('Should load empty list', async () => {
+      const sut = makeSut()
+      const surveys = await sut.loadAll()
+      expect(surveys?.length).toBe(0)
+    })
   })
 })
