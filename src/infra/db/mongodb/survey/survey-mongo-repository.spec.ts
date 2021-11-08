@@ -52,7 +52,7 @@ describe('Account Mongo Repository', () => {
     })
   })
 
-  describe('loadSurveys()', () => {
+  describe('loadAll()', () => {
     test('Should load all surveys on success', async () => {
       await surveyCollection.insertMany([makeFakeSurveyData(), makeFakeSurveyData()])
       const sut = makeSut()
@@ -64,6 +64,15 @@ describe('Account Mongo Repository', () => {
       const sut = makeSut()
       const surveys = await sut.loadAll()
       expect(surveys?.length).toBe(0)
+    })
+  })
+
+  describe('loadById()', () => {
+    test('Should load survey by id on success', async () => {
+      const insertResult = await surveyCollection.insertOne(makeFakeSurveyData())
+      const sut = makeSut()
+      const surveys = await sut.loadById(insertResult.insertedId.toHexString())
+      expect(surveys).toBeTruthy()
     })
   })
 })

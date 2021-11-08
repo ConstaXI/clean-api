@@ -13,8 +13,6 @@ class MongoHelper {
     if (!this.client) throw new Error('Mongo was not connected')
 
     await this.client.close()
-
-    this.client = undefined
   }
 
   async getCollection(name: string): Promise<Collection> {
@@ -24,8 +22,8 @@ class MongoHelper {
       await this.connect(this.uri)
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.client!.db().collection(name)
+    // @ts-expect-error
+    return this.client.db().collection(name)
   }
 
   map(collection: any): any {
