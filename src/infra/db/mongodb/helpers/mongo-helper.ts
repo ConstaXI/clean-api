@@ -26,9 +26,13 @@ class MongoHelper {
     return this.client.db().collection(name)
   }
 
-  map(collection: any): any {
-    const { _id, ...rest } = collection
-    return Object.assign({}, rest, { id: collection._id })
+  map(data: any): any {
+    const { _id, ...rest } = data
+    return Object.assign({}, rest, { id: data._id })
+  }
+
+  mapCollection(collection: any[]): any {
+    return collection.map(c => this.map(c))
   }
 }
 

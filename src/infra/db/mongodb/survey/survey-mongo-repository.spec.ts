@@ -1,7 +1,7 @@
 import { Collection } from 'mongodb'
 import MongoHelper from '../helpers/mongo-helper'
 import { SurveyMongoRepository } from './survey-mongo-repository'
-import { AddSurveyModel } from '../../../../domain/usecases/add-survey'
+import { AddSurveyModel } from '../../../../domain/usecases/survey/add-survey'
 import * as MockDate from 'mockdate'
 
 const makeFakeSurveyData = (): AddSurveyModel => ({
@@ -71,8 +71,9 @@ describe('Account Mongo Repository', () => {
     test('Should load survey by id on success', async () => {
       const insertResult = await surveyCollection.insertOne(makeFakeSurveyData())
       const sut = makeSut()
-      const surveys = await sut.loadById(insertResult.insertedId.toHexString())
-      expect(surveys).toBeTruthy()
+      const survey = await sut.loadById(insertResult.insertedId.toHexString())
+      expect(survey).toBeTruthy()
+      expect(survey?.id).toBeTruthy()
     })
   })
 })

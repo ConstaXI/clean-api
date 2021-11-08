@@ -2,7 +2,7 @@ import request from 'supertest'
 import app from '../config/app'
 import MongoHelper from '../../infra/db/mongodb/helpers/mongo-helper'
 import { Collection } from 'mongodb'
-import { AddSurveyModel } from '../../domain/usecases/add-survey'
+import { AddSurveyModel } from '../../domain/usecases/survey/add-survey'
 import jwt from 'jsonwebtoken'
 import env from '../config/env'
 
