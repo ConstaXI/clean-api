@@ -1,6 +1,6 @@
 {
   "name": "clean-api",
-  "version": "1.3.0",
+  "version": "2.0.0",
   "description": "An API designed with clean architecture",
   "main": "index.js",
   "scripts": {
