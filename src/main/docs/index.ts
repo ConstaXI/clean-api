@@ -12,6 +12,12 @@ import { surveySchema } from './schemas/survey-schema'
 import { surveyAnswerSchema } from './schemas/survey-answer-schema'
 import { forbidden } from './components/forbidden'
 import { apiKeyAuthSchema } from './schemas/api-key-auth-schema'
+import { signUpPath } from './paths/signup-path'
+import { signUpParamsSchema } from './schemas/signup-params-schema'
+import { addSurveyParamsSchema } from './schemas/add-survey-params-schema'
+import { surveyResultPath } from './paths/survey-result-path'
+import { saveSurveyParamsSchema } from './schemas/save-survey-params-schema'
+import { surveyResultSchema } from './schemas/survey-result-schema'
 
 export default {
   openapi: '3.0.0',
@@ -34,7 +40,9 @@ export default {
   }],
   paths: {
     '/login': loginPath,
-    '/surveys': surveysPath
+    '/surveys': surveysPath,
+    '/signup': signUpPath,
+    '/surveys/{surveyId}/results': surveyResultPath
   },
   schemas: {
     account: accountSchema,
@@ -42,7 +50,11 @@ export default {
     error: errorSchema,
     surveys: surveysSchema,
     survey: surveySchema,
-    surveyAnswer: surveyAnswerSchema
+    surveyAnswer: surveyAnswerSchema,
+    signUpParams: signUpParamsSchema,
+    addSurveyParams: addSurveyParamsSchema,
+    saveSurveyParams: saveSurveyParamsSchema,
+    surveyResult: surveyResultSchema
   },
   components: {
     securitySchemes: {
