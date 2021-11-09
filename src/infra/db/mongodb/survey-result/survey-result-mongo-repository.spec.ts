@@ -1,4 +1,4 @@
-import { Collection } from 'mongodb'
+import { Collection, ObjectId } from 'mongodb'
 import MongoHelper from '../helpers/mongo-helper'
 import * as MockDate from 'mockdate'
 import { SurveyResultMongoRepository } from './survey-result-mongo-repository'
@@ -11,7 +11,7 @@ let surveyCollection: Collection
 let accountCollection: Collection
 let surveyResultCollection: Collection
 
-const makeFakeSurvey = async (): Promise<string> => {
+const makeFakeSurvey = async (): Promise<ObjectId> => {
   const result = await surveyCollection.insertOne({
     question: 'any_question',
     answers: [{
@@ -23,17 +23,17 @@ const makeFakeSurvey = async (): Promise<string> => {
     date: new Date()
   })
 
-  return result.insertedId.toHexString()
+  return result.insertedId
 }
 
-const makeFakeAccount = async (): Promise<string> => {
+const makeFakeAccount = async (): Promise<ObjectId> => {
   const result = await accountCollection.insertOne({
     name: 'any_name',
     email: 'any_email@mail.com',
     password: 'any_password'
   })
 
-  return result.insertedId.toHexString()
+  return result.insertedId
 }
 
 describe('Account Mongo Repository', () => {
@@ -53,9 +53,9 @@ describe('Account Mongo Repository', () => {
     surveyCollection = await MongoHelper.getCollection('surveys')
     await surveyCollection.deleteMany({})
     surveyResultCollection = await MongoHelper.getCollection('surveyResults')
-    await surveyCollection.deleteMany({})
+    await surveyResultCollection.deleteMany({})
     accountCollection = await MongoHelper.getCollection('accounts')
-    await surveyCollection.deleteMany({})
+    await accountCollection.deleteMany({})
   })
 
   afterAll(async () => {
@@ -68,35 +68,36 @@ describe('Account Mongo Repository', () => {
       const accountId = await makeFakeAccount()
       const surveyId = await makeFakeSurvey()
       const surveyResult = await sut.save({
-        surveyId,
-        accountId,
+        surveyId: surveyId.toHexString(),
+        accountId: accountId.toHexString(),
         answer: 'any_answer',
         date: new Date()
       })
       expect(surveyResult).toBeTruthy()
-      expect(surveyResult.id).toBeTruthy()
-      expect(surveyResult.answer).toBe('any_answer')
+      expect(surveyResult.answers[0].count).toBe(1)
+      expect(surveyResult.answers[0].percent).toBe(100)
     })
 
     test('Should update a survey result if it already exists', async () => {
       const sut = makeSut()
       const accountId = await makeFakeAccount()
       const surveyId = await makeFakeSurvey()
-      const insertResult = await surveyResultCollection.insertOne({
-        surveyId,
-        accountId,
+      await surveyResultCollection.insertOne({
+        surveyId: new ObjectId(surveyId),
+        accountId: new ObjectId(accountId),
         answer: 'any_answer',
         date: new Date()
       })
       const surveyResult = await sut.save({
-        surveyId,
-        accountId,
+        surveyId: surveyId.toHexString(),
+        accountId: accountId.toHexString(),
         answer: 'updated_answer',
         date: new Date()
       })
       expect(surveyResult).toBeTruthy()
-      expect(surveyResult.id).toEqual(insertResult.insertedId)
-      expect(surveyResult.answer).toBe('updated_answer')
+      expect(surveyResult.answers[0].answer).toBe('updated_answer')
+      expect(surveyResult.answers[0].count).toBe(1)
+      expect(surveyResult.answers[0].percent).toBe(100)
     })
   })
 })
