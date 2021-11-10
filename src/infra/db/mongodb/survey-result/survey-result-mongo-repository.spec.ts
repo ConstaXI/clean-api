@@ -2,6 +2,7 @@ import { Collection, ObjectId } from 'mongodb'
 import MongoHelper from '../helpers/mongo-helper'
 import * as MockDate from 'mockdate'
 import { SurveyResultMongoRepository } from './survey-result-mongo-repository'
+import { SurveyResultModel } from '../../../../domain/models/survey-result'
 
 const makeSut = (): SurveyResultMongoRepository => {
   return new SurveyResultMongoRepository()
@@ -11,7 +12,7 @@ let surveyCollection: Collection
 let accountCollection: Collection
 let surveyResultCollection: Collection
 
-const makeFakeSurvey = async (): Promise<ObjectId> => {
+const makeFakeSurveyId = async (): Promise<string> => {
   const result = await surveyCollection.insertOne({
     question: 'any_question',
     answers: [{
@@ -23,17 +24,17 @@ const makeFakeSurvey = async (): Promise<ObjectId> => {
     date: new Date()
   })
 
-  return result.insertedId
+  return result.insertedId.toHexString()
 }
 
-const makeFakeAccount = async (): Promise<ObjectId> => {
+const makeFakeAccountId = async (): Promise<string> => {
   const result = await accountCollection.insertOne({
     name: 'any_name',
     email: 'any_email@mail.com',
     password: 'any_password'
   })
 
-  return result.insertedId
+  return result.insertedId.toHexString()
 }
 
 describe('Account Mongo Repository', () => {
@@ -65,41 +66,86 @@ describe('Account Mongo Repository', () => {
   describe('save()', () => {
     test('Should add a survey result if its new', async () => {
       const sut = makeSut()
-      const accountId = await makeFakeAccount()
-      const surveyId = await makeFakeSurvey()
-      const surveyResult = await sut.save({
-        surveyId: surveyId.toHexString(),
-        accountId: accountId.toHexString(),
+      const accountId = await makeFakeAccountId()
+      const surveyId = await makeFakeSurveyId()
+      await sut.save({
+        surveyId: surveyId,
+        accountId: accountId,
         answer: 'any_answer',
         date: new Date()
       })
+      const surveyResult = await surveyResultCollection.findOne({
+        surveyId: new ObjectId(surveyId),
+        accountId: new ObjectId(accountId)
+      }) as SurveyResultModel
       expect(surveyResult).toBeTruthy()
-      expect(surveyResult.answers[0].count).toBe(1)
-      expect(surveyResult.answers[0].percent).toBe(100)
-      expect(surveyResult.answers[1].count).toBe(0)
-      expect(surveyResult.answers[1].percent).toBe(0)
     })
 
     test('Should update a survey result if it already exists', async () => {
       const sut = makeSut()
-      const accountId = await makeFakeAccount()
-      const surveyId = await makeFakeSurvey()
+      const accountId = await makeFakeAccountId()
+      const surveyId = await makeFakeSurveyId()
       await surveyResultCollection.insertOne({
         surveyId: new ObjectId(surveyId),
         accountId: new ObjectId(accountId),
         answer: 'any_answer',
         date: new Date()
       })
-      const surveyResult = await sut.save({
-        surveyId: surveyId.toHexString(),
-        accountId: accountId.toHexString(),
+      await sut.save({
+        surveyId: surveyId,
+        accountId: accountId,
         answer: 'another_answer',
         date: new Date()
       })
+      const surveyResult = await surveyResultCollection.find({
+        surveyId: new ObjectId(surveyId),
+        accountId: new ObjectId(accountId)
+      }).toArray() as SurveyResultModel[]
+
       expect(surveyResult).toBeTruthy()
-      expect(surveyResult.answers[0].answer).toBe('updated_answer')
-      expect(surveyResult.answers[0].count).toBe(1)
-      expect(surveyResult.answers[0].percent).toBe(100)
+      expect(surveyResult.length).toBe(1)
+    })
+  })
+
+  describe('loadBySurveyId()', () => {
+    test('Should load a survey result', async () => {
+      const sut = makeSut()
+      const accountId = await makeFakeAccountId()
+      const surveyId = await makeFakeSurveyId()
+      await surveyResultCollection.insertMany([
+        {
+          surveyId: new ObjectId(surveyId),
+          accountId: new ObjectId(accountId),
+          answer: 'any_answer',
+          date: new Date()
+        },
+        {
+          surveyId: new ObjectId(surveyId),
+          accountId: new ObjectId(accountId),
+          answer: 'any_answer',
+          date: new Date()
+        },
+        {
+          surveyId: new ObjectId(surveyId),
+          accountId: new ObjectId(accountId),
+          answer: 'another_answer',
+          date: new Date()
+        },
+        {
+          surveyId: new ObjectId(surveyId),
+          accountId: new ObjectId(accountId),
+          answer: 'another_answer',
+          date: new Date()
+        },
+        {
+          surveyId: new ObjectId(surveyId),
+          accountId: new ObjectId(accountId),
+          answer: 'another_answer',
+          date: new Date()
+        }
+      ])
+      const surveyResult = await sut.loadBySurveyId(surveyId)
+      expect(surveyResult).toBeTruthy()
     })
   })
 })

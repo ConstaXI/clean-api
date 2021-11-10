@@ -18,6 +18,7 @@ import { addSurveyParamsSchema } from './schemas/add-survey-params-schema'
 import { surveyResultPath } from './paths/survey-result-path'
 import { saveSurveyParamsSchema } from './schemas/save-survey-params-schema'
 import { surveyResultSchema } from './schemas/survey-result-schema'
+import { surveyResultAnswerSchema } from './schemas/survey-result-answer-schema'
 
 export default {
   openapi: '3.0.0',
@@ -54,7 +55,8 @@ export default {
     signUpParams: signUpParamsSchema,
     addSurveyParams: addSurveyParamsSchema,
     saveSurveyParams: saveSurveyParamsSchema,
-    surveyResult: surveyResultSchema
+    surveyResult: surveyResultSchema,
+    surveyResultAnswer: surveyResultAnswerSchema
   },
   components: {
     securitySchemes: {

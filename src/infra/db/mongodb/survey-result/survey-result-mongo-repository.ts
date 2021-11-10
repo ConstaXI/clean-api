@@ -3,9 +3,10 @@ import { SurveyResultModel } from '../../../../domain/models/survey-result'
 import { SaveSurveyResultModel } from '../../../../domain/usecases/survey-result/save-survey-result'
 import MongoHelper from '../helpers/mongo-helper'
 import { ObjectId } from 'mongodb'
+import { LoadSurveyResultRepository } from '../../../../data/protocols/db/survey-result/load-survey-result-repository'
 
-export class SurveyResultMongoRepository implements SaveSurveyResultRepository {
-  async save(data: SaveSurveyResultModel): Promise<SurveyResultModel> {
+export class SurveyResultMongoRepository implements SaveSurveyResultRepository, LoadSurveyResultRepository {
+  async save(data: SaveSurveyResultModel): Promise<void> {
     const surveyResultCollection = await MongoHelper.getCollection('surveyResults')
     await surveyResultCollection.findOneAndUpdate({
       surveyId: new ObjectId(data.surveyId),
@@ -18,11 +19,9 @@ export class SurveyResultMongoRepository implements SaveSurveyResultRepository {
     }, {
       upsert: true
     })
-
-    return await this.loadBySurveyId(data.surveyId)
   }
 
-  private async loadBySurveyId(surveyId: string): Promise<SurveyResultModel> {
+  async loadBySurveyId(surveyId: string): Promise<SurveyResultModel> {
     const surveyResultCollection = await MongoHelper.getCollection('surveyResults')
     const query = surveyResultCollection.aggregate([{
       $match: {
@@ -60,7 +59,7 @@ export class SurveyResultMongoRepository implements SaveSurveyResultRepository {
           question: '$survey.question',
           date: '$survey.date',
           total: '$total',
-          answer: 'data.answer',
+          answer: '$data.answer',
           answers: '$survey.answers'
         },
         count: {
