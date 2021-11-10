@@ -1,10 +1,11 @@
-import { Authentication, AuthenticationModel } from '../../../../domain/usecases/account/authentication'
+import { Authentication, AuthenticationParams } from '../../../../domain/usecases/account/authentication'
 import {
   HashCompare,
   LoadAccountByEmailRepository,
   TokenGenerator,
   UpdateAccessTokenRepository
 } from './db-authentication-protocols'
+import { AuthenticationModel } from '../../../../domain/models/authentication-model'
 
 export class DbAuthentication implements Authentication {
   constructor(
@@ -14,7 +15,7 @@ export class DbAuthentication implements Authentication {
     private readonly updateAccessTokenRepository: UpdateAccessTokenRepository
   ) {}
 
-  async auth(authentication: AuthenticationModel): Promise<string | null> {
+  async auth(authentication: AuthenticationParams): Promise<AuthenticationModel | null> {
     const account = await this.loadAccountByEmailRepository.loadByEmail(authentication.email)
 
     if (account) {
@@ -22,7 +23,10 @@ export class DbAuthentication implements Authentication {
       if (isValid) {
         const accessToken = await this.tokenGenerator.generate(account.id)
         await this.updateAccessTokenRepository.update(account.id, accessToken)
-        return accessToken
+        return {
+          accessToken: accessToken,
+          name: account.name
+        }
       }
     }
 

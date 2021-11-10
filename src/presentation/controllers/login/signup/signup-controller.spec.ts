@@ -3,13 +3,14 @@ import {
   AddAccount,
   AddAccountModel,
   Authentication,
-  AuthenticationModel,
+  AuthenticationParams,
   HttpRequest,
   Validation
 } from './signup-controller-protocols'
 import SignUpController from './signup-controller'
 import { EmailInUseError, ServerError } from '../../../errors'
 import { badRequest, forbidden, ok, serverError } from '../../../helpers/http/http-helper'
+import { AuthenticationModel } from '../../../../domain/models/authentication-model'
 
 type SutTypes = {
   sut: SignUpController
@@ -53,8 +54,8 @@ const makeValidation = (): Validation => {
 
 const makeAuthentication = (): Authentication => {
   class AuthenticationStub implements Authentication {
-    async auth(authentication: AuthenticationModel): Promise<string | null> {
-      return 'any_token'
+    async auth(authentication: AuthenticationParams): Promise<AuthenticationModel | null> {
+      return { accessToken: 'any_token', name: 'any_name' }
     }
   }
 
@@ -140,7 +141,7 @@ describe('SignUp', () => {
   test('Should return 200 if valid credentials are provided', async () => {
     const { sut } = makeSut()
     const httpResponse = await sut.handle(makeFakeRequest())
-    expect(httpResponse).toEqual(ok({ accessToken: 'any_token' }))
+    expect(httpResponse).toEqual(ok({ accessToken: 'any_token', name: 'any_name' }))
   })
 
   test('Should return 403 if add account returns null', async () => {

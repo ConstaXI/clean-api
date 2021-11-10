@@ -1,7 +1,8 @@
 import { Validation } from '../../../protocols'
 import { LoginController } from './login-controller'
-import { Authentication, AuthenticationModel, HttpRequest } from './login-controller-protocols'
+import { Authentication, AuthenticationParams, HttpRequest } from './login-controller-protocols'
 import { ok, serverError, unauthorized } from '../../../helpers/http/http-helper'
+import { AuthenticationModel } from '../../../../domain/models/authentication-model'
 
 type SutTypes = {
   sut: LoginController
@@ -11,8 +12,8 @@ type SutTypes = {
 
 const makeAuthentication = (): Authentication => {
   class AuthenticationStub implements Authentication {
-    async auth(authentication: AuthenticationModel): Promise<string | null> {
-      return 'any_token'
+    async auth(authentication: AuthenticationParams): Promise<AuthenticationModel | null> {
+      return { accessToken: 'any_token', name: 'any_name' }
     }
   }
 
@@ -76,6 +77,6 @@ describe('Login Controller', () => {
   test('Should return 200 if valid credentials are provided', async () => {
     const { sut } = makeSut()
     const httpResponse = await sut.handle(makeFakeRequest())
-    expect(httpResponse).toEqual(ok({ accessToken: 'any_token' }))
+    expect(httpResponse).toEqual(ok({ accessToken: 'any_token', name: 'any_name' }))
   })
 })

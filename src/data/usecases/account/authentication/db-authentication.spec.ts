@@ -1,4 +1,3 @@
-import { AuthenticationModel } from '../../../../domain/usecases/account/authentication'
 import { DbAuthentication } from './db-authentication'
 import {
   AccountModel,
@@ -7,6 +6,7 @@ import {
   TokenGenerator,
   UpdateAccessTokenRepository
 } from './db-authentication-protocols'
+import { AuthenticationParams } from '../../../../domain/usecases/account/authentication'
 
 type SutTypes = {
   sut: DbAuthentication
@@ -23,7 +23,7 @@ const makeFakeAccount = (): AccountModel => ({
   password: 'hashed_password'
 })
 
-const makeFakeAuth = (): AuthenticationModel => ({
+const makeFakeAuth = (): AuthenticationParams => ({
   email: 'any_email@mail.com',
   password: 'any_password'
 })
@@ -135,7 +135,7 @@ describe('DbAuthentication UseCase', () => {
     const { sut, tokenGeneratorStub } = makeSut()
     const generateSpy = jest.spyOn(tokenGeneratorStub, 'generate')
     await sut.auth(makeFakeAuth())
-    expect(generateSpy).toHaveBeenLastCalledWith('any_id')
+    expect(generateSpy).toHaveBeenCalledWith('any_id')
   })
 
   test('Should throw if TokenGenerator throws', async () => {
@@ -147,8 +147,8 @@ describe('DbAuthentication UseCase', () => {
 
   test('Should call TokenGenerator with correct id', async () => {
     const { sut } = makeSut()
-    const accessToken = await sut.auth(makeFakeAuth())
-    expect(accessToken).toBe('any_token')
+    const auth = await sut.auth(makeFakeAuth())
+    expect(auth).toEqual({ accessToken: 'any_token', name: 'any_name' })
   })
 
   test('Should call UpdateAccessTokenRepository with correct values', async () => {
@@ -162,6 +162,6 @@ describe('DbAuthentication UseCase', () => {
     const { sut, updateAccessTokenRepositoryStub } = makeSut()
     jest.spyOn(updateAccessTokenRepositoryStub, 'update').mockReturnValueOnce(Promise.reject(new Error()))
     const promise = sut.auth(makeFakeAuth())
-    void expect(promise).rejects.toThrow()
+    await expect(promise).rejects.toThrow()
   })
 })
