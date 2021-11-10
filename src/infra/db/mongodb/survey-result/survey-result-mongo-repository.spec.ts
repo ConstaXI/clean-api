@@ -76,6 +76,8 @@ describe('Account Mongo Repository', () => {
       expect(surveyResult).toBeTruthy()
       expect(surveyResult.answers[0].count).toBe(1)
       expect(surveyResult.answers[0].percent).toBe(100)
+      expect(surveyResult.answers[1].count).toBe(0)
+      expect(surveyResult.answers[1].percent).toBe(0)
     })
 
     test('Should update a survey result if it already exists', async () => {
@@ -91,7 +93,7 @@ describe('Account Mongo Repository', () => {
       const surveyResult = await sut.save({
         surveyId: surveyId.toHexString(),
         accountId: accountId.toHexString(),
-        answer: 'updated_answer',
+        answer: 'another_answer',
         date: new Date()
       })
       expect(surveyResult).toBeTruthy()
