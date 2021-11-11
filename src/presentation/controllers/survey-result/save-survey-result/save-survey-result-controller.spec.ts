@@ -36,7 +36,8 @@ const makeFakeSurveyResult = (): SurveyResultModel => ({
     answer: 'any_answer',
     count: 3,
     image: 'any_image',
-    percent: 80
+    percent: 80,
+    isCurrentAccountAnswered: true
   }]
 })
 

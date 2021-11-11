@@ -144,7 +144,7 @@ describe('Account Mongo Repository', () => {
           date: new Date()
         }
       ])
-      const surveyResult = await sut.loadBySurveyId(surveyId)
+      const surveyResult = await sut.loadBySurveyId(surveyId, accountId)
       expect(surveyResult).toBeTruthy()
     })
   })

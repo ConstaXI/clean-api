@@ -8,6 +8,7 @@ import { SurveyModel } from '../../../../domain/models/survey'
 import * as MockDate from 'mockdate'
 
 const makeFakeRequest = (): HttpRequest => ({
+  accountId: 'any_account_id',
   params: {
     surveyId: 'any_survey_id'
   }
@@ -20,7 +21,8 @@ const makeFakeSurveyResult = (): SurveyResultModel => ({
     image: 'any_image',
     answer: 'any_answer',
     percent: 0,
-    count: 0
+    count: 0,
+    isCurrentAccountAnswered: true
   }],
   date: new Date()
 })
@@ -37,7 +39,7 @@ const makeFakeSurvey = (): SurveyModel => ({
 
 const makeLoadSurveyResultStub = (): LoadSurveyResult => {
   class LoadSurveyResultStub implements LoadSurveyResult {
-    async loadBySurveyId(surveyId: string): Promise<SurveyResultModel> {
+    async loadBySurveyId(surveyId: string, accountId: string): Promise<SurveyResultModel> {
       return makeFakeSurveyResult()
     }
   }
@@ -81,7 +83,7 @@ describe('LoadSurveyResultController', () => {
     MockDate.reset()
   })
 
-  test('Should call LoadSurveyById with correct value', async () => {
+  test('Should call LoadSurveyById with correct values', async () => {
     const { sut, loadSurveyByIdStub } = makeSut()
     const loadByIdSpy = jest.spyOn(loadSurveyByIdStub, 'loadById')
     await sut.handle(makeFakeRequest())
@@ -106,7 +108,7 @@ describe('LoadSurveyResultController', () => {
     const { sut, loadSurveyResultStub } = makeSut()
     const loadByIdSpy = jest.spyOn(loadSurveyResultStub, 'loadBySurveyId')
     await sut.handle(makeFakeRequest())
-    expect(loadByIdSpy).toHaveBeenCalledWith('any_survey_id')
+    expect(loadByIdSpy).toHaveBeenCalledWith('any_survey_id', 'any_account_id')
   })
 
   test('Should return 500 if LoadSurveyResult throws', async () => {

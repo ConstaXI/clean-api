@@ -19,7 +19,8 @@ const makeFakeSurveyResult = (): SurveyResultModel => ({
     image: 'any_image',
     answer: 'any_answer',
     percent: 80,
-    count: 3
+    count: 3,
+    isCurrentAccountAnswered: true
   }],
   date: new Date()
 })
@@ -40,7 +41,7 @@ const makeSaveSurveyResultRepositoryStub = (): SaveSurveyResultRepository => {
 
 const makeLoadSurveyResultRepositoryStub = (): LoadSurveyResultRepository => {
   class LoadSurveyResultRepositoryStub implements LoadSurveyResultRepository {
-    async loadBySurveyId(surveyId: string): Promise<SurveyResultModel> {
+    async loadBySurveyId(surveyId: string, accountId: string): Promise<SurveyResultModel> {
       return makeFakeSurveyResult()
     }
   }
@@ -79,7 +80,8 @@ describe('DbSaveSurveyResult Usecase', () => {
     const { sut, loadSurveyResultRepositoryStub } = makeSut()
     const loadBySurveyIdSpy = jest.spyOn(loadSurveyResultRepositoryStub, 'loadBySurveyId')
     await sut.save(makeFakeSurveyResultData())
-    expect(loadBySurveyIdSpy).toHaveBeenCalledWith(makeFakeSurveyResultData().surveyId)
+    const data = makeFakeSurveyResultData()
+    expect(loadBySurveyIdSpy).toHaveBeenCalledWith(data.surveyId, data.accountId)
   })
 
   test('Should throw if SaveSurveyResultRepository throws', async () => {

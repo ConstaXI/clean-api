@@ -13,7 +13,8 @@ const makeFakeSurveyResult = (): SurveyResultModel => ({
     answer: 'any_answer',
     count: 3,
     image: 'any_image',
-    percent: 80
+    percent: 80,
+    isCurrentAccountAnswered: true
   }]
 })
 
@@ -35,7 +36,7 @@ type SutTypes = {
 
 const makeLoadSurveyResultRepositoryStub = (): LoadSurveyResultRepository => {
   class LoadSurveyResultRepositoryStub implements LoadSurveyResultRepository {
-    async loadBySurveyId(surveyId: string): Promise<SurveyResultModel> {
+    async loadBySurveyId(surveyId: string, accountId: string): Promise<SurveyResultModel> {
       return makeFakeSurveyResult()
     }
   }
@@ -73,23 +74,23 @@ describe('DbLoadSurveyResult', () => {
     MockDate.reset()
   })
 
-  test('Should call LoadSurveyResultRepository', async () => {
+  test('Should call LoadSurveyResultRepository with correct values', async () => {
     const { sut, loadSurveyResultRepositoryStub } = makeSut()
     const loadBySurveyIdSpy = jest.spyOn(loadSurveyResultRepositoryStub, 'loadBySurveyId')
-    await sut.loadBySurveyId('any_survey_id')
+    await sut.loadBySurveyId('any_survey_id', 'any_account_id')
     expect(loadBySurveyIdSpy)
   })
 
   test('Should throw if LoadSurveyResultRepository throws', async () => {
     const { sut, loadSurveyResultRepositoryStub } = makeSut()
     jest.spyOn(loadSurveyResultRepositoryStub, 'loadBySurveyId').mockReturnValueOnce(Promise.reject(new Error()))
-    const promise = sut.loadBySurveyId('any_survey_id')
+    const promise = sut.loadBySurveyId('any_survey_id', 'any_account_id')
     await expect(promise).rejects.toThrow()
   })
 
   test('Should return surveyResultModel on success', async () => {
     const { sut } = makeSut()
-    const surveyResult = await sut.loadBySurveyId('any_survey_id')
+    const surveyResult = await sut.loadBySurveyId('any_survey_id', 'any_account_id')
     await expect(surveyResult).toEqual(makeFakeSurveyResult())
   })
 })
