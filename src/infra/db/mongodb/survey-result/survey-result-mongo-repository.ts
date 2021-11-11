@@ -67,7 +67,7 @@ export class SurveyResultMongoRepository implements SaveSurveyResultRepository, 
         },
         currentAccountAnswered: {
           $push: {
-            $cond: [{ $eq: ['$data.accountId', accountId] }, '$data.answer', null]
+            $cond: [{ $eq: ['$data.accountId', new ObjectId(accountId)] }, '$data.answer', null]
           }
         }
       }
@@ -172,9 +172,7 @@ export class SurveyResultMongoRepository implements SaveSurveyResultRepository, 
         answer: {
           answer: '$_id.answer',
           image: '$_id.image',
-          count: {
-            $round: ['$count']
-          },
+          count: '$count',
           percent: '$percent',
           isCurrentAccountAnswered: '$_id.isCurrentAccountAnswered'
         }

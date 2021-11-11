@@ -4,10 +4,9 @@ import {
   AddAccountModel,
   Authentication,
   AuthenticationModel,
-  HttpRequest,
   Validation
 } from './signup-controller-protocols'
-import SignUpController from './signup-controller'
+import SignUpController, { SignUpRequest } from './signup-controller'
 import { EmailInUseError, ServerError } from '../../../errors'
 import { badRequest, forbidden, ok, serverError } from '../../../helpers/http/http-helper'
 
@@ -18,13 +17,11 @@ type SutTypes = {
   authenticationStub: Authentication
 }
 
-const makeFakeRequest = (): HttpRequest => ({
-  body: {
-    name: 'any_name',
-    email: 'any_email@mail.com',
-    password: 'any_password',
-    passwordConfirmation: 'any_password'
-  }
+const makeFakeRequest = (): SignUpRequest => ({
+  name: 'any_name',
+  email: 'any_email@mail.com',
+  password: 'any_password',
+  passwordConfirmation: 'any_password'
 })
 
 const makeAddAccount = (): AddAccount => {
@@ -108,7 +105,7 @@ describe('SignUp', () => {
     const httpRequest = makeFakeRequest()
 
     await sut.handle(httpRequest)
-    expect(isValidSpy).toHaveBeenCalledWith(httpRequest.body)
+    expect(isValidSpy).toHaveBeenCalledWith(httpRequest)
   })
 
   test('Should return 400 if Validation returns an error', async () => {

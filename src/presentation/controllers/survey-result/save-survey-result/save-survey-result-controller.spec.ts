@@ -1,5 +1,4 @@
-import { SaveSurveyResultController } from './save-survey-result-controller'
-import { HttpRequest } from '../../../protocols'
+import { SaveSurveyResultController, SaveSurveyResultRequest } from './save-survey-result-controller'
 import { LoadSurveyById } from '../../../../domain/usecases/survey/load-survey-by-id'
 import { SurveyModel } from '../../../../domain/models/survey'
 import { InvalidParamError } from '../../../errors'
@@ -8,13 +7,9 @@ import { SaveSurveyResult, SaveSurveyResultModel } from '../../../../domain/usec
 import { SurveyResultModel } from '../../../../domain/models/survey-result'
 import * as MockDate from 'mockdate'
 
-const makeFakeRequest = (): HttpRequest => ({
-  params: {
-    surveyId: 'any_survey_id'
-  },
-  body: {
-    answer: 'any_answer'
-  },
+const makeFakeRequest = (): SaveSurveyResultRequest => ({
+  surveyId: 'any_survey_id',
+  answer: 'any_answer',
   accountId: 'any_account_id'
 })
 
@@ -112,12 +107,8 @@ describe('SaveSurveyResult Controller', () => {
     const { sut } = makeSut()
     const httpResponse = await sut.handle({
       accountId: 'any_account_id',
-      params: {
-        surveyId: 'any_survey_id'
-      },
-      body: {
-        answer: 'wrong_answer'
-      }
+      surveyId: 'any_survey_id',
+      answer: 'wrong_answer'
     })
     expect(httpResponse).toEqual(forbidden(new InvalidParamError('answer')))
   })

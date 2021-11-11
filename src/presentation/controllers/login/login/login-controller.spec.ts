@@ -1,6 +1,6 @@
 import { Validation } from '../../../protocols'
-import { LoginController } from './login-controller'
-import { Authentication, AuthenticationModel, HttpRequest } from './login-controller-protocols'
+import { LoginController, LoginRequest } from './login-controller'
+import { Authentication, AuthenticationModel } from './login-controller-protocols'
 import { ok, serverError, unauthorized } from '../../../helpers/http/http-helper'
 
 type SutTypes = {
@@ -39,11 +39,9 @@ const makeSut = (): SutTypes => {
   }
 }
 
-const makeFakeRequest = (): HttpRequest => ({
-  body: {
-    email: 'any_email@mail.com',
-    password: 'any_password'
-  }
+const makeFakeRequest = (): LoginRequest => ({
+  email: 'any_email@mail.com',
+  password: 'any_password'
 })
 
 describe('Login Controller', () => {

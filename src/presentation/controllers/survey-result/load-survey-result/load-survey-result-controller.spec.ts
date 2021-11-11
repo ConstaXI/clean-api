@@ -1,17 +1,16 @@
 import { SurveyResultModel } from '../../../../domain/models/survey-result'
 import { LoadSurveyResultController } from './load-survey-result-controller'
-import { HttpRequest } from '../../../protocols'
 import { ok, serverError } from '../../../helpers/http/http-helper'
 import { LoadSurveyResult } from '../../../../domain/usecases/survey-result/load-survey-result'
 import { LoadSurveyById } from '../../../../domain/usecases/survey/load-survey-by-id'
 import { SurveyModel } from '../../../../domain/models/survey'
 import * as MockDate from 'mockdate'
+import { SaveSurveyResultRequest } from '../save-survey-result/save-survey-result-controller'
 
-const makeFakeRequest = (): HttpRequest => ({
+const makeFakeRequest = (): SaveSurveyResultRequest => ({
   accountId: 'any_account_id',
-  params: {
-    surveyId: 'any_survey_id'
-  }
+  surveyId: 'any_survey_id',
+  answer: 'any_answer'
 })
 
 const makeFakeSurveyResult = (): SurveyResultModel => ({
@@ -121,6 +120,7 @@ describe('LoadSurveyResultController', () => {
   test('Should return 200 on success', async () => {
     const { sut } = makeSut()
     const httpResponse = await sut.handle(makeFakeRequest())
-    await expect(httpResponse).toEqual(ok(makeFakeSurveyResult()))
+    const fakeSurveyResult = makeFakeSurveyResult()
+    await expect(httpResponse).toEqual(ok({ ...fakeSurveyResult, date: new Date() }))
   })
 })

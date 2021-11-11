@@ -1,7 +1,6 @@
 import { SurveyModel } from '../../../../domain/models/survey'
 import { LoadSurveys } from '../../../../domain/usecases/survey/load-surveys'
-import { LoadSurveyController } from './load-survey-controller'
-import { HttpRequest } from '../../../protocols'
+import { LoadSurveyController, LoadSurveyRequest } from './load-survey-controller'
 import * as MockDate from 'mockdate'
 import { noContent, ok, serverError } from '../../../helpers/http/http-helper'
 
@@ -41,8 +40,9 @@ type SutTypes = {
   loadSurveysStub: LoadSurveys
 }
 
-const makeFakeRequest = (): HttpRequest => ({
-  accountId: 'any_id'
+const makeFakeRequest = (): LoadSurveyRequest => ({
+  accountId: 'any_account_id',
+  surveyId: 'any_survey_id'
 })
 
 const makeSut = (): SutTypes => {
@@ -63,11 +63,11 @@ describe('LoadSurveyController', () => {
     MockDate.reset()
   })
 
-  test('Should call LoadSurvey with correct value', async () => {
+  test('Should call LoadSurvey with correct values', async () => {
     const { sut, loadSurveysStub } = makeSut()
     const loadSpy = jest.spyOn(loadSurveysStub, 'load')
     await sut.handle(makeFakeRequest())
-    expect(loadSpy).toHaveBeenCalled()
+    expect(loadSpy).toHaveBeenCalledWith('any_account_id')
   })
 
   test('Should return 200 on success', async () => {

@@ -1,6 +1,11 @@
 import { badRequest, ok, serverError, unauthorized } from '../../../helpers/http/http-helper'
-import { Authentication, Controller, HttpRequest, HttpResponse } from './login-controller-protocols'
+import { Authentication, Controller, HttpResponse } from './login-controller-protocols'
 import { Validation } from '../../../protocols'
+
+export type LoginRequest = {
+  email: string
+  password: string
+}
 
 export class LoginController implements Controller {
   constructor(
@@ -8,15 +13,13 @@ export class LoginController implements Controller {
     private readonly validation: Validation
   ) {}
 
-  async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
+  async handle(request: LoginRequest): Promise<HttpResponse> {
     try {
-      const error = this.validation.validate(httpRequest.body)
+      const error = this.validation.validate(request)
 
       if (error) return badRequest(error)
 
-      const { email, password } = httpRequest.body
-
-      const accessToken = await this.authentication.auth({ email, password })
+      const accessToken = await this.authentication.auth(request)
 
       if (!accessToken) {
         return unauthorized()

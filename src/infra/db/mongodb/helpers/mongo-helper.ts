@@ -28,7 +28,7 @@ class MongoHelper {
 
   map(data: any): any {
     const { _id, ...rest } = data
-    return Object.assign({}, rest, { id: data._id })
+    return Object.assign({}, rest, { id: data._id.toHexString() })
   }
 
   mapCollection(collection: any[]): any {
