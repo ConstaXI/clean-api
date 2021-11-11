@@ -1,6 +1,7 @@
 import { Controller, HttpRequest, HttpResponse } from '../../../protocols'
 import { LoadSurveys } from '../../../../domain/usecases/survey/load-surveys'
-import { noContent, ok, serverError } from '../../../helpers/http/http-helper'
+import { forbidden, noContent, ok, serverError } from '../../../helpers/http/http-helper'
+import { InvalidParamError } from '../../../errors'
 
 export class LoadSurveyController implements Controller {
   constructor(
@@ -9,7 +10,9 @@ export class LoadSurveyController implements Controller {
 
   async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
-      const surveys = await this.loadSurveys.load()
+      if (!httpRequest.accountId) return forbidden(new InvalidParamError('accountId'))
+
+      const surveys = await this.loadSurveys.load(httpRequest.accountId)
 
       if (surveys?.length) return ok(surveys)
 

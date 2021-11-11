@@ -1,6 +1,7 @@
 import { SurveyModel } from '../../../../domain/models/survey'
 import { LoadSurveys } from '../../../../domain/usecases/survey/load-surveys'
 import { LoadSurveyController } from './load-survey-controller'
+import { HttpRequest } from '../../../protocols'
 import * as MockDate from 'mockdate'
 import { noContent, ok, serverError } from '../../../helpers/http/http-helper'
 
@@ -27,7 +28,7 @@ const makeFakeSurveys = (): SurveyModel[] => ([
 
 const makeLoadSurveysStub = (): LoadSurveys => {
   class LoadSurveyStub implements LoadSurveys {
-    async load(): Promise<SurveyModel[]> {
+    async load(accountId: string): Promise<SurveyModel[]> {
       return makeFakeSurveys()
     }
   }
@@ -39,6 +40,10 @@ type SutTypes = {
   sut: LoadSurveyController
   loadSurveysStub: LoadSurveys
 }
+
+const makeFakeRequest = (): HttpRequest => ({
+  accountId: 'any_id'
+})
 
 const makeSut = (): SutTypes => {
   const loadSurveysStub = makeLoadSurveysStub()
@@ -58,30 +63,30 @@ describe('LoadSurveyController', () => {
     MockDate.reset()
   })
 
-  test('Should call LoadSurvey', async () => {
+  test('Should call LoadSurvey with correct value', async () => {
     const { sut, loadSurveysStub } = makeSut()
     const loadSpy = jest.spyOn(loadSurveysStub, 'load')
-    await sut.handle({})
+    await sut.handle(makeFakeRequest())
     expect(loadSpy).toHaveBeenCalled()
   })
 
   test('Should return 200 on success', async () => {
     const { sut } = makeSut()
-    const httpResponse = await sut.handle({})
+    const httpResponse = await sut.handle(makeFakeRequest())
     expect(httpResponse).toEqual(ok(makeFakeSurveys()))
   })
 
   test('Should return 500 if loadSurveys throws', async () => {
     const { sut, loadSurveysStub } = makeSut()
     jest.spyOn(loadSurveysStub, 'load').mockReturnValueOnce(Promise.reject(new Error()))
-    const httpResponse = await sut.handle({})
+    const httpResponse = await sut.handle(makeFakeRequest())
     expect(httpResponse).toEqual(serverError(new Error()))
   })
 
   test('Should return 204 if there is no surveys', async () => {
     const { sut, loadSurveysStub } = makeSut()
     jest.spyOn(loadSurveysStub, 'load').mockReturnValueOnce(Promise.resolve([]))
-    const httpResponse = await sut.handle({})
+    const httpResponse = await sut.handle(makeFakeRequest())
     expect(httpResponse).toEqual(noContent())
   })
 })
