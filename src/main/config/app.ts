@@ -1,20 +1,14 @@
-import express, { Express } from 'express'
+import express from 'express'
 import setupMiddlewares from './middlewares'
 import setupRoutes from './routes'
 import setupSwagger from './swagger'
 import setupApolloServer from './apollo-server'
 
-export default async function startApp(): Promise<Express> {
-  const apolloServer = setupApolloServer()
+const app = express()
 
-  await apolloServer.start()
+setupApolloServer(app)
+setupSwagger(app)
+setupMiddlewares(app)
+setupRoutes(app)
 
-  const app = express()
-
-  apolloServer.applyMiddleware({ app })
-  setupSwagger(app)
-  setupMiddlewares(app)
-  setupRoutes(app)
-
-  return app
-}
+export default app
