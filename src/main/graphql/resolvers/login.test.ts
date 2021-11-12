@@ -49,4 +49,27 @@ describe('Login GraphQL', () => {
       expect(response.data.login.accessToken).toBeTruthy()
     })
   })
+
+  describe('SignUp Mutation', () => {
+    test('Should return an token on valid values', async () => {
+      const signUpQuery = gql`
+        mutation signup($name: String!, $email: String!, $password: String!, $passwordConfirmation: String!) {
+          signup(name: $name, email: $email, password: $password, passwordConfirmation: $passwordConfirmation) {
+            accessToken
+          }
+        }
+      `
+      const { query } = createTestClient({ apolloServer })
+      const response: any = await query(signUpQuery, {
+        variables: {
+          name: 'any_name',
+          email: 'any_email@mail.com',
+          password: 'any_password',
+          passwordConfirmation: 'any_password'
+        }
+      })
+
+      expect(response.data.signup.accessToken).toBeTruthy()
+    })
+  })
 })
