@@ -3,7 +3,6 @@ import setupMiddlewares from './middlewares'
 import setupRoutes from './routes'
 import setupSwagger from './swagger'
 import setupApolloServer from './apollo-server'
-import configApolloServer from './apollo-apply-middleware'
 
 export default async function startApp(): Promise<Express> {
   const apolloServer = setupApolloServer()
@@ -12,7 +11,7 @@ export default async function startApp(): Promise<Express> {
 
   const app = express()
 
-  configApolloServer(app, apolloServer)
+  apolloServer.applyMiddleware({ app })
   setupSwagger(app)
   setupMiddlewares(app)
   setupRoutes(app)
