@@ -89,18 +89,25 @@ describe('LoadSurveyResultController', () => {
     expect(loadByIdSpy).toHaveBeenCalledWith('any_survey_id')
   })
 
-  test('Should return 500 if LoadSurveyById throws', async () => {
-    const { sut, loadSurveyByIdStub } = makeSut()
-    jest.spyOn(loadSurveyByIdStub, 'loadById').mockImplementationOnce(() => { throw new Error() })
+  test('Should return 200 on success', async () => {
+    const { sut } = makeSut()
     const httpResponse = await sut.handle(makeFakeRequest())
-    await expect(httpResponse).toEqual(serverError(new Error()))
+    const fakeSurveyResult = makeFakeSurveyResult()
+    expect(httpResponse).toEqual(ok(fakeSurveyResult))
   })
 
   test('Should return 500 if LoadSurveyById throws', async () => {
     const { sut, loadSurveyByIdStub } = makeSut()
     jest.spyOn(loadSurveyByIdStub, 'loadById').mockImplementationOnce(() => { throw new Error() })
     const httpResponse = await sut.handle(makeFakeRequest())
-    await expect(httpResponse).toEqual(serverError(new Error()))
+    expect(httpResponse).toEqual(serverError(new Error()))
+  })
+
+  test('Should return 500 if LoadSurveyById throws', async () => {
+    const { sut, loadSurveyByIdStub } = makeSut()
+    jest.spyOn(loadSurveyByIdStub, 'loadById').mockImplementationOnce(() => { throw new Error() })
+    const httpResponse = await sut.handle(makeFakeRequest())
+    expect(httpResponse).toEqual(serverError(new Error()))
   })
 
   test('Should call LoadSurveyResult with correct value', async () => {
@@ -114,13 +121,6 @@ describe('LoadSurveyResultController', () => {
     const { sut, loadSurveyResultStub } = makeSut()
     jest.spyOn(loadSurveyResultStub, 'loadBySurveyId').mockImplementationOnce(() => { throw new Error() })
     const httpResponse = await sut.handle(makeFakeRequest())
-    await expect(httpResponse).toEqual(serverError(new Error()))
-  })
-
-  test('Should return 200 on success', async () => {
-    const { sut } = makeSut()
-    const httpResponse = await sut.handle(makeFakeRequest())
-    const fakeSurveyResult = makeFakeSurveyResult()
-    await expect(httpResponse).toEqual(ok({ ...fakeSurveyResult, date: new Date() }))
+    expect(httpResponse).toEqual(serverError(new Error()))
   })
 })
