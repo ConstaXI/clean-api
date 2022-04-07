@@ -15,13 +15,13 @@ export class AccountMongoRepository implements
   async addAccount(accountData: AddAccountModel): Promise<AccountModel | null> {
     const accountCollection = await MongoHelper.getCollection('accounts')
     const result = await accountCollection.insertOne(accountData)
-    const account = await accountCollection.findOne({ _id: result.insertedId }) as AccountModel
+    const account = await accountCollection.findOne({ _id: result.insertedId })
     return MongoHelper.map(account)
   }
 
   async loadByEmail(email: string): Promise<AccountModel | null> {
     const accountCollection = await MongoHelper.getCollection('accounts')
-    const account = await accountCollection.findOne({ email }) as AccountModel
+    const account = await accountCollection.findOne({ email })
     return account && MongoHelper.map(account)
   }
 
@@ -45,7 +45,7 @@ export class AccountMongoRepository implements
       }, {
         role: 'admin'
       }]
-    }) as AccountModel
+    })
     return account && MongoHelper.map(account)
   }
 }

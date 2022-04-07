@@ -2,7 +2,6 @@ import { Collection, ObjectId } from 'mongodb'
 import MongoHelper from '../helpers/mongo-helper'
 import * as MockDate from 'mockdate'
 import { SurveyResultMongoRepository } from './survey-result-mongo-repository'
-import { SurveyResultModel } from '../../../../domain/models/survey-result'
 
 const makeSut = (): SurveyResultMongoRepository => {
   return new SurveyResultMongoRepository()
@@ -77,7 +76,7 @@ describe('Account Mongo Repository', () => {
       const surveyResult = await surveyResultCollection.findOne({
         surveyId: new ObjectId(surveyId),
         accountId: new ObjectId(accountId)
-      }) as SurveyResultModel
+      })
       expect(surveyResult).toBeTruthy()
     })
 
@@ -100,7 +99,7 @@ describe('Account Mongo Repository', () => {
       const surveyResult = await surveyResultCollection.find({
         surveyId: new ObjectId(surveyId),
         accountId: new ObjectId(accountId)
-      }).toArray() as SurveyResultModel[]
+      }).toArray()
 
       expect(surveyResult).toBeTruthy()
       expect(surveyResult.length).toBe(1)
