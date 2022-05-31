@@ -9,6 +9,9 @@
     "debug": "nodemon -L --watch ./dist --inspect=0.0.0.0:9222 --nolazy ./dist/main/server.js",
     "up": "npm run build && docker compose up -d",
     "lint": "eslint . --ext=.ts",
+    "typeorm": "ts-node-dev node_modules/typeorm/cli.js",
+    "migration:generate": "yarn typeorm migration:generate src/infra/db/typeorm/migrations/base -d src/infra/db/typeorm/ormconfig.ts",
+    "migration:run": "yarn typeorm migration:run -d src/infra/db/typeorm/ormconfig.ts",
     "test": "jest --silent --noStackTrace --runInBand",
     "test:verbose": "jest --runInBand",
     "test:unit": "npm test -- --watch -c jest-unit-config.ts",
@@ -48,17 +51,21 @@
     "supertest": "^6.1.6",
     "ts-jest": "^27.0.5",
     "ts-node": "^10.2.1",
+    "ts-node-dev": "^2.0.0",
     "typescript": "^4.4.3"
   },
   "dependencies": {
     "apollo-server-express": "^2.25.2",
     "bcrypt": "^5.0.1",
+    "dotenv": "^16.0.1",
     "express": "^4.17.1",
     "graphql": "^15.7.2",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^4.1.3",
     "nodemon": "^2.0.14",
+    "pg": "^8.7.3",
     "swagger-ui-express": "^4.1.6",
+    "typeorm": "^0.3.6",
     "validator": "^13.6.0"
   }
 }
