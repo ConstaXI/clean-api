@@ -4,6 +4,7 @@ import { SurveyMongoRepository } from './survey-mongo-repository'
 import { AddSurveyModel } from '../../../../domain/usecases/survey/add-survey'
 import * as MockDate from 'mockdate'
 import { AccountModel } from '../../../../domain/models/account'
+import { SurveyModel } from '../../../../domain/models/survey'
 
 const makeFakeSurveyData = (): AddSurveyModel => ({
   question: 'any_question',
@@ -77,7 +78,7 @@ describe('Account Mongo Repository', () => {
         date: new Date()
       })
       const sut = makeSut()
-      const surveys = await sut.loadAll(insertedAccount.insertedId.toHexString())
+      const surveys = await sut.loadAll(insertedAccount.insertedId.toHexString()) as SurveyModel[]
       expect(surveys?.length).toBe(2)
       expect(surveys[0].didAnswer).toBe(true)
       expect(surveys[1].didAnswer).toBe(false)
