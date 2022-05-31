@@ -1,4 +1,4 @@
-import { DataSource } from 'typeorm'
+import { DataSource, EntityTarget, Repository } from 'typeorm'
 import dataSource from '../ormconfig'
 
 class TypeormHelper {
@@ -8,6 +8,10 @@ class TypeormHelper {
 
   async getConnection (): Promise<DataSource> {
     return dataSource
+  }
+
+  async getRepository<E>(entity: EntityTarget<E>): Promise<Repository<E>> {
+    return dataSource.getRepository(entity)
   }
 
   async disconnect (): Promise<void> {
