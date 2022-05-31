@@ -4,3 +4,5 @@ export type AccountModel = {
   email: string
   password: string
 }
+
+export interface IAccountModel extends AccountModel {}
