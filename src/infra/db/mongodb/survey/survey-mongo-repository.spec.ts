@@ -79,9 +79,7 @@ describe('Account Mongo Repository', () => {
       const sut = makeSut()
       const surveys = await sut.loadAll(insertedAccount.insertedId.toHexString())
       expect(surveys?.length).toBe(2)
-      // @ts-expect-error
       expect(surveys[0].didAnswer).toBe(true)
-      // @ts-expect-error
       expect(surveys[1].didAnswer).toBe(false)
     })
 
