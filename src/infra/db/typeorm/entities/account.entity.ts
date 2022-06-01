@@ -2,6 +2,7 @@ import { IAccountModel } from '../../../../domain/models/account'
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 import { ISurveyModel } from '../../../../domain/models/survey'
 import SurveyEntity from './survey.entity'
+import SurveyResultEntity from './surveyResult.entity'
 
 @Entity('accounts')
 export default class AccountEntity implements IAccountModel {
@@ -22,4 +23,7 @@ export default class AccountEntity implements IAccountModel {
 
   @OneToMany(() => SurveyEntity, survey => survey.account)
   surveys: ISurveyModel
+
+  @OneToMany(() => SurveyResultEntity, surveyResult => surveyResult.account)
+  surveyResults: SurveyResultEntity[]
 }

@@ -3,6 +3,8 @@ import { ISurveyAnswerModel, ISurveyModel } from '../../../../domain/models/surv
 import SurveyAnswerEntity from './surveyAnswer.entity'
 import AccountEntity from './account.entity'
 import { IAccountModel } from '../../../../domain/models/account'
+import { ISurveyResultModel } from '../../../../domain/models/survey-result'
+import SurveyResultEntity from './surveyResult.entity'
 
 @Entity('surveys')
 export default class SurveyEntity implements ISurveyModel {
@@ -18,6 +20,11 @@ export default class SurveyEntity implements ISurveyModel {
   @OneToMany(() => SurveyAnswerEntity, surveyAnswer => surveyAnswer.survey)
   answers: ISurveyAnswerModel[]
 
-  @ManyToOne(() => AccountEntity, account => account.surveys)
+  @OneToMany(() => SurveyResultEntity, surveyResult => surveyResult.survey)
+  surveyResults: ISurveyResultModel[]
+
+  @ManyToOne(() => AccountEntity, account => account.surveys, {
+    cascade: ['insert']
+  })
   account: IAccountModel
 }

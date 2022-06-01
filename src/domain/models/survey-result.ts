@@ -12,3 +12,10 @@ type SurveyAnswerModel = {
   percent: number
   isCurrentAccountAnswered: boolean
 }
+
+export interface ISurveyResultModel {
+  surveyId: string
+  accountId: string
+  answer: string
+  date: Date
+}
