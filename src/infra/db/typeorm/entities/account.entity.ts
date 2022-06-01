@@ -1,8 +1,10 @@
 import { IAccountModel } from '../../../../domain/models/account'
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
+import { ISurveyModel } from '../../../../domain/models/survey'
+import SurveyEntity from './survey.entity'
 
 @Entity('accounts')
-export default class AccountEntity extends BaseEntity implements IAccountModel {
+export default class AccountEntity implements IAccountModel {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
@@ -17,4 +19,7 @@ export default class AccountEntity extends BaseEntity implements IAccountModel {
 
   @Column({ nullable: true })
   accessToken?: string
+
+  @OneToMany(() => SurveyEntity, survey => survey.account)
+  surveys: ISurveyModel
 }

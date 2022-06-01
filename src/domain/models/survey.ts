@@ -3,6 +3,8 @@ export type SurveyAnswerModel = {
   answer: string
 }
 
+export interface ISurveyAnswerModel extends SurveyAnswerModel {}
+
 export type SurveyModel = {
   id: string
   question: string
@@ -10,3 +12,5 @@ export type SurveyModel = {
   date: Date
   didAnswer?: boolean
 }
+
+export interface ISurveyModel extends SurveyModel {}
