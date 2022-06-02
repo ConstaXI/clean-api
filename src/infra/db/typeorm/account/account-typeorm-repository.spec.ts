@@ -8,19 +8,21 @@ let repository: Repository<AccountEntity>
 describe('Account TypeOrm Repository', () => {
   beforeAll(async () => {
     await TypeormHelper.connect()
-    const dataSource = await TypeormHelper.getConnection()
-    await dataSource.runMigrations()
   })
 
   beforeEach(async () => {
+    const dataSource = await TypeormHelper.getConnection()
+    await dataSource.runMigrations()
     repository = await TypeormHelper.getRepository(AccountEntity)
-    await repository.clear()
   })
 
   afterAll(async () => {
+    await TypeormHelper.disconnect()
+  })
+
+  afterEach(async () => {
     const dataSource = await TypeormHelper.getConnection()
     await dataSource.undoLastMigration()
-    await TypeormHelper.disconnect()
   })
 
   const makeSut = (): AccountTypeormRepository => {
@@ -61,7 +63,7 @@ describe('Account TypeOrm Repository', () => {
 
     test('Should return null if load fails', async () => {
       const sut = makeSut()
-      const account = await sut.loadByEmail('any_email@mail.com')
+      const account = await sut.loadByEmail('i_do_not_exist@mail.com')
       expect(account).toBeFalsy()
     })
   })
@@ -100,7 +102,7 @@ describe('Account TypeOrm Repository', () => {
 
     test('Should return null if loadByToken fails', async () => {
       const sut = makeSut()
-      const account = await sut.loadByToken('any_token')
+      const account = await sut.loadByToken('non_existing_token')
       expect(account).toBeFalsy()
     })
   })
