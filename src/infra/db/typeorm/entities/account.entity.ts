@@ -9,7 +9,7 @@ export default class AccountEntity implements IAccountModel {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
-  @Column()
+  @Column({ unique: true })
   email: string
 
   @Column()
@@ -21,9 +21,9 @@ export default class AccountEntity implements IAccountModel {
   @Column({ nullable: true })
   accessToken?: string
 
-  @OneToMany(() => SurveyEntity, survey => survey.account)
+  @OneToMany(() => SurveyEntity, survey => survey.account, { onDelete: 'CASCADE' })
   surveys: ISurveyModel
 
-  @OneToMany(() => SurveyResultEntity, surveyResult => surveyResult.account)
+  @OneToMany(() => SurveyResultEntity, surveyResult => surveyResult.account, { onDelete: 'CASCADE' })
   surveyResults: SurveyResultEntity[]
 }

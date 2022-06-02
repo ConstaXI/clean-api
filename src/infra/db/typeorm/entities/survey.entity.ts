@@ -17,14 +17,20 @@ export default class SurveyEntity implements ISurveyModel {
   @Column()
   question: string
 
-  @OneToMany(() => SurveyAnswerEntity, surveyAnswer => surveyAnswer.survey)
+  @Column()
+  accountId: string
+
+  didAnswer?: boolean
+
+  @OneToMany(() => SurveyAnswerEntity, surveyAnswer => surveyAnswer.survey, { onDelete: 'CASCADE' })
   answers: ISurveyAnswerModel[]
 
-  @OneToMany(() => SurveyResultEntity, surveyResult => surveyResult.survey)
+  @OneToMany(() => SurveyResultEntity, surveyResult => surveyResult.survey, { onDelete: 'CASCADE' })
   surveyResults: ISurveyResultModel[]
 
   @ManyToOne(() => AccountEntity, account => account.surveys, {
-    cascade: ['insert']
+    cascade: ['insert'],
+    onDelete: 'CASCADE'
   })
   account: IAccountModel
 }

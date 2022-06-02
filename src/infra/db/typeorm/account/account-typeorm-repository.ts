@@ -14,7 +14,9 @@ export class AccountTypeormRepository implements AddAccountRepository,
   async addAccount (accountData: AddAccountModel): Promise<AccountModel | null> {
     const repository = await TypeormHelper.getRepository(AccountEntity)
 
-    return await repository.save(accountData)
+    const account = await repository.save(accountData)
+
+    return account
   }
 
   async loadByEmail (email: string): Promise<AccountModel | null> {

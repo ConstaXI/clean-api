@@ -7,6 +7,7 @@ export interface ISurveyAnswerModel extends SurveyAnswerModel {}
 
 export type SurveyModel = {
   id: string
+  accountId: string
   question: string
   answers: SurveyAnswerModel[]
   date: Date
