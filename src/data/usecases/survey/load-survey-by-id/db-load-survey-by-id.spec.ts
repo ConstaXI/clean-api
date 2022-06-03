@@ -12,6 +12,7 @@ type SutTypes = {
 
 const makeFakeSurvey = (): SurveyModel => ({
   id: 'any_id',
+  accountId: 'any_account_id',
   question: 'any_question_0',
   answers: [{
     image: 'any_image_0',

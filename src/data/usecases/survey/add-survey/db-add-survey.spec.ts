@@ -5,6 +5,7 @@ import * as MockDate from 'mockdate'
 
 const makeFakeSurveyData = (): AddSurveyModel => ({
   question: 'any_question',
+  accountId: 'any_account_id',
   answers: [{
     image: 'any_image',
     answer: 'any_answer'

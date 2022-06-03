@@ -21,6 +21,7 @@ const makeFakeSurveyResult = (): SurveyResultModel => ({
 const makeFakeSurvey = (): SurveyModel => ({
   id: 'any_id',
   question: 'any_question',
+  accountId: 'any_account_id',
   answers: [{
     image: 'any_image',
     answer: 'any_answer'

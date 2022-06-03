@@ -82,8 +82,8 @@ describe('Account Typeorm Repository', () => {
       const sut = makeSut()
       const surveys = await sut.loadAll(insertedAccount.id) as SurveyModel[]
       expect(surveys?.length).toBe(2)
-      // expect(surveys[0].didAnswer).toBe(true)
-      // expect(surveys[1].didAnswer).toBe(false)
+      expect(surveys[0].didAnswer).toBe(true)
+      expect(surveys[1].didAnswer).toBe(false)
     })
 
     test('Should load empty list', async () => {

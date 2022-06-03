@@ -6,6 +6,7 @@ import MockDate from 'mockdate'
 
 const makeFakeRequest = (): AddSurveyRequest => ({
   question: 'any_question',
+  accountId: 'any_account_id',
   answers: [{
     image: 'any_image',
     answer: 'any_answer'

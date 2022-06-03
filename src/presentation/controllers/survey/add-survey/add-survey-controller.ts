@@ -8,6 +8,7 @@ type Answer = {
 }
 
 export type AddSurveyRequest = {
+  accountId: string
   question: string
   answers: Answer[]
 }
@@ -23,14 +24,14 @@ export class AddSurveyController implements Controller {
     try {
       const error = this.validation.validate(request)
 
+      if (error) {
+        return badRequest(error)
+      }
+
       await this.addSurvey.add({
         ...request,
         date: new Date()
       })
-
-      if (error) {
-        return badRequest(error)
-      }
 
       return noContent()
     } catch (error: any) {
