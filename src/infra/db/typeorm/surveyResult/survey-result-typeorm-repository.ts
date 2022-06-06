@@ -28,7 +28,6 @@ export class SurveyResultTypeormRepository implements SaveSurveyResultRepository
     const surveyRepository = await TypeormHelper.getRepository(SurveyEntity)
 
     const surveyResults = await surveyResultRepository.findBy({
-      accountId,
       surveyId
     })
 
@@ -48,8 +47,8 @@ export class SurveyResultTypeormRepository implements SaveSurveyResultRepository
       answers: survey.answers.map(a => ({
         ...a,
         count: surveyResults.filter(sr => sr.answer === a.answer).length,
-        percent: 50,
-        isCurrentAccountAnswered: false
+        percent: surveyResults.filter(sr => sr.answer === a.answer).length / surveyResults.length,
+        isCurrentAccountAnswered: surveyResults.some((sr) => sr.answer === a.answer)
       })),
       question: survey.question,
       date: new Date()
