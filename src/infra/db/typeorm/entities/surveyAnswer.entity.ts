@@ -22,6 +22,6 @@ export default class SurveyAnswerEntity implements ISurveyAnswerModel {
   @Column()
   surveyId: string
 
-  @ManyToOne(() => SurveyEntity, survey => survey.answers)
+  @ManyToOne(() => SurveyEntity, survey => survey.answers, { onDelete: 'CASCADE' })
   survey: ISurveyModel
 }

@@ -6,8 +6,9 @@ import { SurveyModel } from '../../../../domain/models/survey'
 import TypeormHelper from '../helpers/typeorm-helper'
 import SurveyEntity from '../entities/survey.entity'
 import SurveyAnswerEntity from '../entities/surveyAnswer.entity'
+import { DeleteSurveyByIdRepository } from '../../../../data/protocols/db/survey/delete-survey-repository'
 
-export default class SurveyTypeormRepository implements AddSurveyRepository, LoadSurveysRepository, LoadSurveyByIdRepository {
+export default class SurveyTypeormRepository implements AddSurveyRepository, LoadSurveysRepository, LoadSurveyByIdRepository, DeleteSurveyByIdRepository {
   async addSurvey (surveyData: AddSurveyModel): Promise<void> {
     const surveyRepository = await TypeormHelper.getRepository(SurveyEntity)
     const answerRepository = await TypeormHelper.getRepository(SurveyAnswerEntity)
@@ -40,5 +41,17 @@ export default class SurveyTypeormRepository implements AddSurveyRepository, Loa
     }
 
     return survey
+  }
+
+  async delete (id: string): Promise<void> {
+    const repository = await TypeormHelper.getRepository(SurveyEntity)
+
+    const survey = await repository.findOne({ where: { id }, relations: ['answers'] })
+
+    if (!survey) {
+      throw new Error('Survey not found')
+    }
+
+    await repository.remove(survey)
   }
 }

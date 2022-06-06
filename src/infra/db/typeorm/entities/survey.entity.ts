@@ -22,7 +22,7 @@ export default class SurveyEntity implements ISurveyModel {
 
   didAnswer?: boolean
 
-  @OneToMany(() => SurveyAnswerEntity, surveyAnswer => surveyAnswer.survey, { cascade: ['insert'], onDelete: 'CASCADE' })
+  @OneToMany(() => SurveyAnswerEntity, surveyAnswer => surveyAnswer.survey, { cascade: true, onDelete: 'CASCADE' })
   answers: ISurveyAnswerModel[]
 
   @OneToMany(() => SurveyResultEntity, surveyResult => surveyResult.survey, { onDelete: 'CASCADE' })
