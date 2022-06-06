@@ -36,7 +36,7 @@ export default class SurveyTypeormRepository implements AddSurveyRepository, Loa
     const survey = await repository.findOne({ where: { id }, relations: ['answers'] })
 
     if (!survey) {
-      throw new Error()
+      throw new Error('survey not found')
     }
 
     return survey
