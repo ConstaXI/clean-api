@@ -1,14 +1,16 @@
 import request from 'supertest'
 import app from '../config/app'
-import MongoHelper from '../../infra/db/mongodb/helpers/mongo-helper'
-import { Collection } from 'mongodb'
 import { AddSurveyModel } from '../../domain/usecases/survey/add-survey'
 import jwt from 'jsonwebtoken'
 import env from '../config/env'
+import TypeormHelper from '../../infra/db/typeorm/helpers/typeorm-helper'
+import AccountEntity from '../../infra/db/typeorm/entities/account.entity'
+import * as MockDate from 'mockdate'
+import { Repository } from 'typeorm'
 
-const makeFakeSurveyData = (): AddSurveyModel => ({
+const makeFakeSurveyData = (accountId?: string): AddSurveyModel => ({
   question: 'any_question',
-  accountId: 'any_account_id',
+  accountId: accountId ?? 'any_account_id',
   answers: [{
     image: 'any_image',
     answer: 'any_answer'
@@ -16,45 +18,46 @@ const makeFakeSurveyData = (): AddSurveyModel => ({
   date: new Date()
 })
 
-let surveyCollection: Collection
-let accountCollection: Collection
+let accountRepository: Repository<AccountEntity>
 
-const makeAccessToken = async (): Promise<string> => {
-  const insertResult = await accountCollection.insertOne({
+const makeAccessToken = async (): Promise<string[]> => {
+  const insertResult = await accountRepository.save({
     name: 'any_name',
     email: 'any_mail@email.com',
-    password: 'any_password',
-    role: 'admin'
+    password: 'any_password'
   })
 
-  const accessToken = jwt.sign(insertResult.insertedId.toHexString(), env.jwtSecret)
+  const accessToken = jwt.sign(insertResult.id, env.jwtSecret)
 
-  await accountCollection.updateOne({
-    _id: insertResult.insertedId
+  await accountRepository.update({
+    id: insertResult.id
   }, {
-    $set: {
-      accessToken: accessToken
-    }
+    accessToken: accessToken
   })
 
-  return accessToken
+  return [insertResult.id, accessToken]
 }
 
 describe('Surveys Routes', () => {
   beforeAll(async () => {
-    await MongoHelper.connect(process.env.MONGO_URL as string)
+    MockDate.set(new Date())
+    await TypeormHelper.connect()
   })
 
   beforeEach(async () => {
-    surveyCollection = await MongoHelper.getCollection('surveys')
-    await surveyCollection.deleteMany({})
-
-    accountCollection = await MongoHelper.getCollection('accounts')
-    await accountCollection.deleteMany({})
+    const dataSource = await TypeormHelper.getConnection()
+    await dataSource.runMigrations()
+    accountRepository = await TypeormHelper.getRepository(AccountEntity)
   })
 
   afterAll(async () => {
-    await MongoHelper.disconnect()
+    MockDate.reset()
+    await TypeormHelper.disconnect()
+  })
+
+  afterEach(async () => {
+    const dataSource = await TypeormHelper.getConnection()
+    await dataSource.undoLastMigration()
   })
 
   describe('POST /surveys', () => {
@@ -66,9 +69,11 @@ describe('Surveys Routes', () => {
     })
 
     test('Should return 204 on add survey with valid accessToken', async () => {
+      const [, accessToken] = await makeAccessToken()
+
       await request(app)
         .post('/api/surveys')
-        .set('x-access-token', await makeAccessToken())
+        .set('x-access-token', accessToken)
         .send(makeFakeSurveyData())
         .expect(204)
     })
@@ -82,9 +87,11 @@ describe('Surveys Routes', () => {
     })
 
     test('Should return 204 on load surveys with valid accessToken', async () => {
+      const [, accessToken] = await makeAccessToken()
+
       await request(app)
         .get('/api/surveys')
-        .set('x-access-token', await makeAccessToken())
+        .set('x-access-token', accessToken)
         .expect(204)
     })
   })

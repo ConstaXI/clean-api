@@ -1,8 +1,6 @@
 import { LoadSurveysRepository } from '../../../protocols/db/survey/load-surveys-repository'
 import { SurveyModel } from '../../../../domain/models/survey'
 import { DbLoadSurveys } from './db-load-surveys'
-import MongoHelper from '../../../../infra/db/mongodb/helpers/mongo-helper'
-import { Collection } from 'mongodb'
 import * as MockDate from 'mockdate'
 
 type SutTypes = {
@@ -52,8 +50,6 @@ const makeSut = (): SutTypes => {
   }
 }
 
-let surveyCollection: Collection
-
 describe('DbLoadSurveys', () => {
   beforeAll(() => {
     MockDate.set(new Date())
@@ -61,19 +57,6 @@ describe('DbLoadSurveys', () => {
 
   afterAll(() => {
     MockDate.reset()
-  })
-
-  beforeAll(async () => {
-    await MongoHelper.connect(process.env.MONGO_URL as string)
-  })
-
-  beforeEach(async () => {
-    surveyCollection = await MongoHelper.getCollection('surveys')
-    await surveyCollection.deleteMany({})
-  })
-
-  afterAll(async () => {
-    await MongoHelper.disconnect()
   })
 
   test('Should call LoadSurveysRepository', async () => {

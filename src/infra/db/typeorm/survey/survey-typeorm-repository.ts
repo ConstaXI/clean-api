@@ -9,18 +9,14 @@ import SurveyAnswerEntity from '../entities/surveyAnswer.entity'
 
 export default class SurveyTypeormRepository implements AddSurveyRepository, LoadSurveysRepository, LoadSurveyByIdRepository {
   async addSurvey (surveyData: AddSurveyModel): Promise<void> {
-    const repository = await TypeormHelper.getRepository(SurveyEntity)
+    const surveyRepository = await TypeormHelper.getRepository(SurveyEntity)
+    const answerRepository = await TypeormHelper.getRepository(SurveyAnswerEntity)
 
-    const answers = surveyData.answers?.map(answer => {
-      const newAnswer = new SurveyAnswerEntity()
+    const survey = await surveyRepository.save(surveyData)
 
-      return Object.assign(newAnswer, answer) as SurveyAnswerEntity
-    })
-
-    await repository.save({
-      ...surveyData,
-      answers
-    })
+    await Promise.all(
+      surveyData.answers.map(async answer => await answerRepository.save({ ...answer, surveyId: survey.id }))
+    )
   }
 
   async loadAll (accountId: string): Promise<SurveyModel[] | null> {

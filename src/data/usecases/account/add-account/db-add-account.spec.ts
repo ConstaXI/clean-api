@@ -6,8 +6,8 @@ import {
   LoadAccountByEmailRepository
 } from './db-add-account-protocols'
 import { DbAddAccount } from './db-add-account'
-import MongoHelper from '../../../../infra/db/mongodb/helpers/mongo-helper'
-import { Collection } from 'mongodb'
+import TypeormHelper from '../../../../infra/db/typeorm/helpers/typeorm-helper'
+import * as MockDate from 'mockdate'
 
 type SutTypes = {
   sut: DbAddAccount
@@ -72,27 +72,25 @@ const makeSut = (): SutTypes => {
   }
 }
 
-let accountCollection: Collection
-
 describe('DbAddAccount Usecase', () => {
   beforeAll(async () => {
-    await MongoHelper.connect('mongodb://localhost:27017/jest')
+    MockDate.set(new Date())
+    await TypeormHelper.connect()
   })
 
   beforeEach(async () => {
-    accountCollection = await MongoHelper.getCollection('accounts')
-    await accountCollection.deleteMany({})
+    const dataSource = await TypeormHelper.getConnection()
+    await dataSource.runMigrations()
   })
 
   afterAll(async () => {
-    await MongoHelper.disconnect()
+    MockDate.reset()
+    await TypeormHelper.disconnect()
   })
 
-  test('Should call Encrypter with correct password', async () => {
-    const { sut, encrypterStub } = makeSut()
-    const encryptSpy = jest.spyOn(encrypterStub, 'encrypt')
-    await sut.add(makeFakeAccountData())
-    expect(encryptSpy).toHaveBeenCalledWith('valid_password')
+  afterEach(async () => {
+    const dataSource = await TypeormHelper.getConnection()
+    await dataSource.undoLastMigration()
   })
 
   test('Should throw if Encrypter throws', async () => {

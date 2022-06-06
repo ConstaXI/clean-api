@@ -10,7 +10,7 @@ export default class SurveyAnswerEntity implements ISurveyAnswerModel {
   @Column()
   answer: string
 
-  @Column()
+  @Column({ nullable: true })
   image: string
 
   count: number

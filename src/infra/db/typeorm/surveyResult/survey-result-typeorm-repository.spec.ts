@@ -14,9 +14,10 @@ let surveyRepository: Repository<SurveyEntity>
 let accountRepository: Repository<AccountEntity>
 let surveyResultRepository: Repository<SurveyResultEntity>
 
-const makeFakeSurveyId = async (): Promise<string> => {
+const makeFakeSurveyId = async (accountId: string): Promise<string> => {
   const result = await surveyRepository.save({
     question: 'any_question',
+    accountId,
     answers: [{
       answer: 'any_answer'
     }, {
@@ -66,24 +67,27 @@ describe('Account Mongo Repository', () => {
     test('Should add a survey result if its new', async () => {
       const sut = makeSut()
       const accountId = await makeFakeAccountId()
-      const surveyId = await makeFakeSurveyId()
+      const surveyId = await makeFakeSurveyId(accountId)
+
       await sut.save({
         surveyId: surveyId,
         accountId: accountId,
         answer: 'any_answer',
         date: new Date()
       })
+
       const surveyResult = await surveyResultRepository.findOneBy({
         surveyId,
         accountId
       })
+
       expect(surveyResult).toBeTruthy()
     })
 
     test('Should update a survey result if it already exists', async () => {
       const sut = makeSut()
       const accountId = await makeFakeAccountId()
-      const surveyId = await makeFakeSurveyId()
+      const surveyId = await makeFakeSurveyId(accountId)
       await surveyResultRepository.save({
         surveyId,
         accountId,
@@ -91,8 +95,8 @@ describe('Account Mongo Repository', () => {
         date: new Date()
       })
       await sut.save({
-        surveyId: surveyId,
-        accountId: accountId,
+        surveyId,
+        accountId,
         answer: 'another_answer',
         date: new Date()
       })
@@ -110,7 +114,7 @@ describe('Account Mongo Repository', () => {
     test('Should load a survey result', async () => {
       const sut = makeSut()
       const accountId = await makeFakeAccountId()
-      const surveyId = await makeFakeSurveyId()
+      const surveyId = await makeFakeSurveyId(accountId)
       await surveyResultRepository.save([
         {
           surveyId,

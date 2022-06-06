@@ -1,9 +1,8 @@
-import MongoHelper from '../../../../infra/db/mongodb/helpers/mongo-helper'
 import * as MockDate from 'mockdate'
-import { Collection } from 'mongodb'
 import { SurveyModel } from '../../../../domain/models/survey'
 import { LoadSurveyByIdRepository } from '../../../protocols/db/survey/load-survey-by-id-repository'
 import { DbLoadSurveyById } from './db-load-survey-by-id'
+import TypeormHelper from '../../../../infra/db/typeorm/helpers/typeorm-helper'
 
 type SutTypes = {
   sut: DbLoadSurveyById
@@ -40,28 +39,25 @@ const makeSut = (): SutTypes => {
   }
 }
 
-let surveyCollection: Collection
-
 describe('DbLoadSurveys', () => {
-  beforeAll(() => {
-    MockDate.set(new Date())
-  })
-
-  afterAll(() => {
-    MockDate.reset()
-  })
-
   beforeAll(async () => {
-    await MongoHelper.connect(process.env.MONGO_URL as string)
+    MockDate.set(new Date())
+    await TypeormHelper.connect()
   })
 
   beforeEach(async () => {
-    surveyCollection = await MongoHelper.getCollection('surveys')
-    await surveyCollection.deleteMany({})
+    const dataSource = await TypeormHelper.getConnection()
+    await dataSource.runMigrations()
   })
 
   afterAll(async () => {
-    await MongoHelper.disconnect()
+    MockDate.reset()
+    await TypeormHelper.disconnect()
+  })
+
+  afterEach(async () => {
+    const dataSource = await TypeormHelper.getConnection()
+    await dataSource.undoLastMigration()
   })
 
   test('Should call LoadSurveyByIdRepository', async () => {

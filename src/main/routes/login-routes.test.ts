@@ -1,23 +1,30 @@
 import request from 'supertest'
 import app from '../config/app'
-import MongoHelper from '../../infra/db/mongodb/helpers/mongo-helper'
-import { Collection } from 'mongodb'
 import { hash } from 'bcrypt'
+import { Repository } from 'typeorm'
+import AccountEntity from '../../infra/db/typeorm/entities/account.entity'
+import TypeormHelper from '../../infra/db/typeorm/helpers/typeorm-helper'
 
-let accountCollection: Collection
+let accountRepository: Repository<AccountEntity>
 
 describe('Signup Routes', () => {
   beforeAll(async () => {
-    await MongoHelper.connect(process.env.MONGO_URL as string)
+    await TypeormHelper.connect()
   })
 
   beforeEach(async () => {
-    accountCollection = await MongoHelper.getCollection('accounts')
-    await accountCollection.deleteMany({})
+    const dataSource = await TypeormHelper.getConnection()
+    await dataSource.runMigrations()
+    accountRepository = await TypeormHelper.getRepository(AccountEntity)
   })
 
   afterAll(async () => {
-    await MongoHelper.disconnect()
+    await TypeormHelper.disconnect()
+  })
+
+  afterEach(async () => {
+    const dataSource = await TypeormHelper.getConnection()
+    await dataSource.undoLastMigration()
   })
 
   describe('POST /signup', () => {
@@ -37,7 +44,7 @@ describe('Signup Routes', () => {
   describe('POST /login', () => {
     test('Should return 200 on login', async () => {
       const hashedPassword = await hash('any_password', 12)
-      await accountCollection.insertOne({
+      await accountRepository.save({
         name: 'any_name',
         email: 'any_email@mail.com',
         password: hashedPassword
