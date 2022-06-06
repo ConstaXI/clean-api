@@ -13,8 +13,14 @@ export default class SurveyAnswerEntity implements ISurveyAnswerModel {
   @Column()
   image: string
 
+  count: number
+
+  percent: number
+
+  isCurrentAccountAnswered: boolean
+
   @Column()
-  survey_id: string
+  surveyId: string
 
   @ManyToOne(() => SurveyEntity, survey => survey.answers)
   survey: ISurveyModel

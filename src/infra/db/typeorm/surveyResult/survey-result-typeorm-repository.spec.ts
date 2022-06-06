@@ -1,21 +1,23 @@
-import { Collection, ObjectId } from 'mongodb'
-import MongoHelper from '../helpers/mongo-helper'
 import * as MockDate from 'mockdate'
-import { SurveyResultMongoRepository } from './survey-result-mongo-repository'
+import TypeormHelper from '../helpers/typeorm-helper'
+import SurveyEntity from '../entities/survey.entity'
+import AccountEntity from '../entities/account.entity'
+import SurveyResultEntity from '../entities/surveyResult.entity'
+import { Repository } from 'typeorm'
+import { SurveyResultTypeormRepository } from './survey-result-typeorm-repository'
 
-const makeSut = (): SurveyResultMongoRepository => {
-  return new SurveyResultMongoRepository()
+const makeSut = (): SurveyResultTypeormRepository => {
+  return new SurveyResultTypeormRepository()
 }
 
-let surveyCollection: Collection
-let accountCollection: Collection
-let surveyResultCollection: Collection
+let surveyRepository: Repository<SurveyEntity>
+let accountRepository: Repository<AccountEntity>
+let surveyResultRepository: Repository<SurveyResultEntity>
 
 const makeFakeSurveyId = async (): Promise<string> => {
-  const result = await surveyCollection.insertOne({
+  const result = await surveyRepository.save({
     question: 'any_question',
     answers: [{
-      image: 'any_image',
       answer: 'any_answer'
     }, {
       answer: 'another_answer'
@@ -23,43 +25,41 @@ const makeFakeSurveyId = async (): Promise<string> => {
     date: new Date()
   })
 
-  return result.insertedId.toHexString()
+  return result.id
 }
 
 const makeFakeAccountId = async (): Promise<string> => {
-  const result = await accountCollection.insertOne({
+  const result = await accountRepository.save({
     name: 'any_name',
     email: 'any_email@mail.com',
     password: 'any_password'
   })
 
-  return result.insertedId.toHexString()
+  return result.id
 }
 
 describe('Account Mongo Repository', () => {
-  beforeAll(() => {
-    MockDate.set(new Date())
-  })
-
-  afterAll(() => {
-    MockDate.reset()
-  })
-
   beforeAll(async () => {
-    await MongoHelper.connect('mongodb://localhost:27017/jest')
+    MockDate.set(new Date())
+    await TypeormHelper.connect()
   })
 
   beforeEach(async () => {
-    surveyCollection = await MongoHelper.getCollection('surveys')
-    await surveyCollection.deleteMany({})
-    surveyResultCollection = await MongoHelper.getCollection('surveyResults')
-    await surveyResultCollection.deleteMany({})
-    accountCollection = await MongoHelper.getCollection('accounts')
-    await accountCollection.deleteMany({})
+    const dataSource = await TypeormHelper.getConnection()
+    await dataSource.runMigrations()
+    surveyRepository = await TypeormHelper.getRepository(SurveyEntity)
+    accountRepository = await TypeormHelper.getRepository(AccountEntity)
+    surveyResultRepository = await TypeormHelper.getRepository(SurveyResultEntity)
   })
 
   afterAll(async () => {
-    await MongoHelper.disconnect()
+    MockDate.reset()
+    await TypeormHelper.disconnect()
+  })
+
+  afterEach(async () => {
+    const dataSource = await TypeormHelper.getConnection()
+    await dataSource.undoLastMigration()
   })
 
   describe('save()', () => {
@@ -73,9 +73,9 @@ describe('Account Mongo Repository', () => {
         answer: 'any_answer',
         date: new Date()
       })
-      const surveyResult = await surveyResultCollection.findOne({
-        surveyId: new ObjectId(surveyId),
-        accountId: new ObjectId(accountId)
+      const surveyResult = await surveyResultRepository.findOneBy({
+        surveyId,
+        accountId
       })
       expect(surveyResult).toBeTruthy()
     })
@@ -84,9 +84,9 @@ describe('Account Mongo Repository', () => {
       const sut = makeSut()
       const accountId = await makeFakeAccountId()
       const surveyId = await makeFakeSurveyId()
-      await surveyResultCollection.insertOne({
-        surveyId: new ObjectId(surveyId),
-        accountId: new ObjectId(accountId),
+      await surveyResultRepository.save({
+        surveyId,
+        accountId,
         answer: 'any_answer',
         date: new Date()
       })
@@ -96,10 +96,10 @@ describe('Account Mongo Repository', () => {
         answer: 'another_answer',
         date: new Date()
       })
-      const surveyResult = await surveyResultCollection.find({
-        surveyId: new ObjectId(surveyId),
-        accountId: new ObjectId(accountId)
-      }).toArray()
+      const surveyResult = await surveyResultRepository.findBy({
+        surveyId,
+        accountId
+      })
 
       expect(surveyResult).toBeTruthy()
       expect(surveyResult.length).toBe(1)
@@ -111,34 +111,34 @@ describe('Account Mongo Repository', () => {
       const sut = makeSut()
       const accountId = await makeFakeAccountId()
       const surveyId = await makeFakeSurveyId()
-      await surveyResultCollection.insertMany([
+      await surveyResultRepository.save([
         {
-          surveyId: new ObjectId(surveyId),
-          accountId: new ObjectId(accountId),
+          surveyId,
+          accountId,
           answer: 'any_answer',
           date: new Date()
         },
         {
-          surveyId: new ObjectId(surveyId),
-          accountId: new ObjectId(accountId),
+          surveyId,
+          accountId,
           answer: 'any_answer',
           date: new Date()
         },
         {
-          surveyId: new ObjectId(surveyId),
-          accountId: new ObjectId(accountId),
+          surveyId,
+          accountId,
           answer: 'another_answer',
           date: new Date()
         },
         {
-          surveyId: new ObjectId(surveyId),
-          accountId: new ObjectId(accountId),
+          surveyId,
+          accountId,
           answer: 'another_answer',
           date: new Date()
         },
         {
-          surveyId: new ObjectId(surveyId),
-          accountId: new ObjectId(accountId),
+          surveyId,
+          accountId,
           answer: 'another_answer',
           date: new Date()
         }

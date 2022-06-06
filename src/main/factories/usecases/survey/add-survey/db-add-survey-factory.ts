@@ -1,8 +1,8 @@
 import { AddSurvey } from '../../../../../domain/usecases/survey/add-survey'
 import { DbAddSurvey } from '../../../../../data/usecases/survey/add-survey/db-add-survey'
-import { SurveyMongoRepository } from '../../../../../infra/db/mongodb/survey/survey-mongo-repository'
+import SurveyTypeormRepository from '../../../../../infra/db/typeorm/survey/survey-typeorm-repository'
 
 export const makeDbAddSurvey = (): AddSurvey => {
-  const surveyMongoRepository = new SurveyMongoRepository()
-  return new DbAddSurvey(surveyMongoRepository)
+  const surveyRepository = new SurveyTypeormRepository()
+  return new DbAddSurvey(surveyRepository)
 }
