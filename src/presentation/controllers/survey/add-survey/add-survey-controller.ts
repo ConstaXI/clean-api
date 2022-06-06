@@ -28,8 +28,6 @@ export class AddSurveyController implements Controller {
         return badRequest(error)
       }
 
-      console.log({ request })
-
       await this.addSurvey.add({
         ...request,
         date: new Date()

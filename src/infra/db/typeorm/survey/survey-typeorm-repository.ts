@@ -33,7 +33,7 @@ export default class SurveyTypeormRepository implements AddSurveyRepository, Loa
   async loadById (id: string): Promise<SurveyModel> {
     const repository = await TypeormHelper.getRepository(SurveyEntity)
 
-    const survey = await repository.findOneBy({ id })
+    const survey = await repository.findOne({ where: { id }, relations: ['answers'] })
 
     if (!survey) {
       throw new Error()

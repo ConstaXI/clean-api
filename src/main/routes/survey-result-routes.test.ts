@@ -82,8 +82,6 @@ describe('Surveys Routes', () => {
           answer: 'any_answer'
         })
         .expect(200)
-
-      console.log('a')
     })
   })
 
