@@ -48,7 +48,7 @@ export class SurveyResultTypeormRepository implements SaveSurveyResultRepository
         ...a,
         count: surveyResults.filter(sr => sr.answer === a.answer).length,
         percent: surveyResults.filter(sr => sr.answer === a.answer).length / surveyResults.length,
-        isCurrentAccountAnswered: surveyResults.some((sr) => sr.answer === a.answer)
+        isCurrentAccountAnswered: surveyResults.some((sr) => sr.answer === a.answer && sr.accountId === accountId)
       })),
       question: survey.question,
       date: new Date()

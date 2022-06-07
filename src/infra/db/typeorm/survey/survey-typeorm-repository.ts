@@ -23,11 +23,11 @@ export default class SurveyTypeormRepository implements AddSurveyRepository, Loa
   async loadAll (accountId: string): Promise<SurveyModel[] | null> {
     const repository = await TypeormHelper.getRepository(SurveyEntity)
 
-    const surveys = await repository.find({ where: { accountId }, relations: ['surveyResults'] })
+    const surveys = await repository.find({ relations: ['surveyResults', 'account'] })
 
     return surveys.map(s => ({
       ...s,
-      didAnswer: !!s.surveyResults.length
+      didAnswer: s.surveyResults.some(sr => sr.accountId === accountId)
     }))
   }
 
